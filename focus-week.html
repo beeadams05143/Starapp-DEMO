@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Focus of the Week • Planning Page</title>
+  <style>
+    :root{
+      --paper:#fffef8; --ink:#2b2b2b;
+      --accent:#ffb703; --accent-2:#8ecae6;
+      --line:rgba(0,0,0,.08); --margin-line:rgba(255,0,0,.25);
+      --ring:#222;
+    }
+    html,body{height:100%;margin:0;background:#f4f1ea;color:var(--ink);
+      font-family:ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,"Comic Neue","Bradley Hand","Segoe Print",sans-serif;}
+    #navbar{position:sticky;top:0;z-index:10;}
+    #groupSelect, .group-select, [data-group-control], .nav-group, .group-dropdown { display:none !important; }
+
+    .wrapper{max-width:960px;margin:24px auto;padding:16px;}
+    .clipboard{position:relative;padding:24px 20px 28px;border-radius:16px;background:#e3d7c6;
+      box-shadow:0 6px 24px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.6);}
+    .clip{position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+      width:120px;height:36px;background:#715a3a;border-radius:8px 8px 2px 2px;box-shadow:0 8px 0 rgba(0,0,0,.2);}
+    .sheet{position:relative;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.12);
+      padding:28px 22px 28px 46px;border:1px solid rgba(0,0,0,.08);
+      background:repeating-linear-gradient(to bottom,var(--paper),var(--paper) 28px,var(--line) 29px,var(--paper) 30px);}
+    .sheet::before{content:"";position:absolute;left:32px;top:0;bottom:0;width:2px;background:var(--margin-line);}
+
+    h1,h2,h3,label,.label{font-family:"Comic Neue","Bradley Hand","Segoe Print",system-ui,sans-serif;}
+    h1{margin:0 0 6px;font-size:28px;letter-spacing:.2px;}
+    .sub{font-size:13px;opacity:.8;margin-bottom:14px;}
+
+    .grid{display:grid;gap:12px;}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+
+    .row{display:grid;grid-template-columns:160px 1fr;gap:8px;align-items:center;}
+    .row .label{font-weight:700;white-space:nowrap;}
+
+    .card{background:rgba(255,255,255,.7);border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:14px;}
+    .sticky{background:var(--accent);border:1px solid rgba(0,0,0,.15);transform:rotate(-1.2deg);box-shadow:0 3px 8px rgba(0,0,0,.15);}
+
+    .input, select, textarea{
+      width:100%; box-sizing:border-box;
+      border:2px solid transparent; border-bottom:2px solid rgba(0,0,0,.2);
+      background:transparent; font-size:16px; padding:8px 6px; outline:none;
+    }
+    .input::placeholder, textarea::placeholder{color:rgba(0,0,0,.45);}
+    .input:focus, select:focus, textarea:focus{border-color:var(--ring);border-radius:6px;background:rgba(255,255,255,.7);}
+
+    /* Compact “chip” controls */
+    .input-chip{
+      border:1px solid rgba(0,0,0,.18) !important;
+      border-bottom-color:rgba(0,0,0,.18) !important;
+      background:rgba(255,255,255,.95);
+      border-radius:10px;
+      padding:6px 10px;
+      box-shadow:0 1px 0 rgba(0,0,0,.08);
+      font-size:14px;
+      line-height:1.2;
+    }
+    select.input-chip{padding-right:28px;}
+
+    /* Top line single-row, wide fields */
+    .topline .grid { gap: 10px; }
+    .topline .row { grid-template-columns: 140px minmax(240px,1fr); align-items:center; }
+    #focusArea, #customTitle { width:100%; }
+    #customTitle { min-width:0; max-width:100%; }
+
+    .pill{border:none;padding:0;background:transparent;display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer;}
+    .pill input{accent-color:#222;transform:scale(.95);}
+
+    .goal{border:2px solid rgba(0,0,0,.18);border-radius:12px;padding:10px;background:rgba(255,255,255,.65);}
+    .goal h3{margin:6px 0 8px;font-size:18px;}
+    .goal-title{
+      display:block;
+      max-width:100%;
+      overflow-wrap:anywhere;
+    }
+    .goal-notes{
+      background:var(--accent);
+      border:1px solid rgba(0,0,0,.15);
+      border-radius:10px;
+      padding:10px 12px;
+      box-shadow:0 3px 8px rgba(0,0,0,.15);
+    }
+    .goal-notes:focus{
+      border-color:#222;
+      background:#ffe18a;
+    }
+    .checklist{display:grid;gap:8px;}
+    .checklist input[type="text"]{width:100%;}
+    .support-select{display:grid;gap:6px;grid-template-columns:repeat(3,minmax(0,1fr));}
+
+    .week-grid{width:100%;border-collapse:collapse;}
+    .week-grid th,.week-grid td{border:1px solid rgba(0,0,0,.2);padding:8px;text-align:center;background:rgba(255,255,255,.6);}
+
+    .btns{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{border:2px solid #222;background:#fff;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;
+      box-shadow:2px 2px 0 #222;transition:transform .05s ease;}
+    .btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #222;}
+    .add-goal-wrap{margin-top:18px;}
+
+    .footer-hint{font-size:12px;opacity:.7;text-align:right;margin-top:8px;}
+
+    .section-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .section-header h2{margin:0;}
+    .spacer{flex:1 1 auto;}
+
+    @media print{
+      body{background:white;}
+      .wrapper{margin:0;padding:0;}
+      .clipboard{box-shadow:none;background:transparent;padding:0;}
+      .clip{display:none;}
+      .sheet{box-shadow:none;border:1px solid rgba(0,0,0,.2);}
+      .btns,#navbar{display:none !important;}
+    }
+    @media (max-width:720px){
+      body{overflow-x:hidden;}
+      .wrapper{margin:12px auto;padding:10px;}
+      .clipboard{padding:16px;}
+      .clip{width:96px;height:28px;top:-14px;}
+      .sheet{padding:18px 14px 22px 24px;}
+      .sheet::before{left:18px;}
+      h1{font-size:22px;}
+      .grid-2,.grid-3{grid-template-columns:1fr;}
+      .row{grid-template-columns:1fr;gap:4px;}
+      .section-header{flex-direction:column;align-items:flex-start;gap:6px;}
+      .btns{flex-direction:column;}
+      .btns .btn{width:100%;}
+      .week-grid{display:block;overflow-x:auto;width:100%;max-width:100%;min-width:0;}
+      .week-grid thead, .week-grid tbody{display:table;width:100%;}
+      .week-grid th,.week-grid td{padding:6px;font-size:12px;white-space:normal;word-break:break-word;}
+      textarea{min-height:120px;}
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <div class="wrapper">
+    <div class="clipboard">
+      <div class="clip" aria-hidden="true"></div>
+      <div class="sheet">
+        <header class="grid" style="gap:6px;">
+          <h1>✏️ Focus of the Week</h1>
+          <div class="sub" id="weekRangeText">Week of —</div>
+          <div class="row" style="max-width:360px;">
+            <div class="label">Week start</div>
+            <input id="weekStartPicker" class="input input-chip" type="date" />
+          </div>
+
+          <!-- Top line -->
+          <section class="card topline">
+            <div class="grid">
+              <div class="row">
+                <div class="label">Focus area</div>
+                <select id="focusArea" class="input input-chip">
+                  <option value="community">Community</option>
+                  <option value="vocational">Vocational</option>
+                  <option value="daily-living">Daily Living</option>
+                  <option value="self-help">Self Help</option>
+                  <option value="advocacy">Advocacy</option>
+                  <option value="communication" selected>Communication</option>
+                </select>
+              </div>
+              <div class="row">
+                <div class="label">Custom title</div>
+                <input id="customTitle" class="input input-chip" type="text"
+                       placeholder="e.g., Ask for help at the store" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Why this focus matters -->
+          <section class="card" style="margin-top:10px;">
+            <h3>Why this focus matters</h3>
+            <textarea id="whyMatters" rows="3" placeholder="Short rationale…"></textarea>
+          </section>
+        </header>
+
+        <!-- Weekly Goals -->
+        <section style="margin-top:14px;">
+          <div class="section-header">
+            <h2>Weekly Goals (up to 3)</h2>
+            <div class="spacer"></div>
+            <label for="weekFreq" class="label">Target Frequency</label>
+            <select id="weekFreq" class="input input-chip" style="max-width:160px;">
+              <option>Daily</option><option>3x/week</option><option>Once</option>
+            </select>
+          </div>
+
+          <div id="goals" class="grid" style="margin-top:12px;"></div>
+          <div class="btns add-goal-wrap">
+            <button class="btn" id="addGoal">+ Add Goal</button>
+          </div>
+        </section>
+
+        <!-- Daily Practice Tracker -->
+        <section style="margin-top:14px;" class="grid">
+          <h2>Daily Practice Tracker</h2>
+          <table class="week-grid" aria-label="Weekly practice tracker">
+            <thead>
+              <tr><th>Day</th><th>Practiced</th><th>Prompt level used</th><th>Notes</th></tr>
+            </thead>
+            <tbody id="weekTableBody"></tbody>
+          </table>
+        </section>
+
+        <!-- Reflection / Next steps -->
+        <section style="margin-top:14px;" class="grid grid-2">
+          <div class="card">
+            <h3>Reflection</h3>
+            <textarea id="reflection" rows="5" placeholder="What went well? What needs adjusting?"></textarea>
+          </div>
+          <div class="card sticky">
+            <h3>Next Steps</h3>
+            <textarea id="nextSteps" rows="5" placeholder="Continue • Increase challenge • Change focus…"></textarea>
+          </div>
+        </section>
+
+        <div class="btns" style="margin-top:16px;">
+          <button class="btn" id="saveBtn">💾 Save</button>
+          <button class="btn" id="printBtn">🖨️ Print / PDF</button>
+          <button class="btn" id="copyNextBtn">➡️ Copy to Next Week</button>
+          <button class="btn" id="clearBtn">🧹 Clear</button>
+        </div>
+        <div class="footer-hint">Pro tip: Use “Print / PDF” to share at team meetings.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goal card template -->
+  <template id="goalTemplate">
+    <div class="goal">
+      <h3 contenteditable="true" class="goal-title" data-placeholder="Type goal statement here…">Goal title</h3>
+      <div class="grid grid-3">
+        <div>
+          <div class="label">Action Steps (checklist)</div>
+          <div class="checklist">
+            <label><input type="checkbox" /> <input type="text" placeholder="Step 1" /></label>
+            <label><input type="checkbox" /> <input type="text" placeholder="Step 2" /></label>
+            <label><input type="checkbox" /> <input type="text" placeholder="Step 3" /></label>
+          </div>
+        </div>
+        <div>
+          <div class="label">Prompt Level Goal</div>
+          <select class="goal-prompt input input-chip" aria-label="Prompt level goal">
+            <option value="">Select prompt level</option>
+          </select>
+        </div>
+        <div>
+          <div class="label">Notes</div>
+          <textarea rows="6" class="goal-notes" placeholder="Any specifics for this goal…"></textarea>
+        </div>
+      </div>
+      <div class="btns" style="margin-top:8px;">
+        <button class="btn remove-goal">Remove Goal</button>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import {
+      loadFocusForCurrentUser,
+      saveFocusForGroup,
+      ensureGroupId,
+      withGoalIds,
+      readLocalFocusDraft,
+      writeLocalFocusDraft,
+      clearLocalFocusDraft,
+      LOCAL_FOCUS_KEY
+    } from './focus-data.js?v=2025.01.09E';
+    import { getSessionFromStorage } from './restClient.js?v=2025.01.09E';
+    // optional navbar loader
+    (function(){
+      if(!document.getElementById('navbar')) return;
+    const s=document.createElement('script'); s.src='load-navbar.js?v=2025.01.09E'; s.defer=true; document.head.appendChild(s);
+    })();
+
+    // --- element refs
+    const weekRangeText = document.getElementById('weekRangeText');
+    const weekStartPicker = document.getElementById('weekStartPicker');
+    const goalsEl       = document.getElementById('goals');
+    const addGoalBtn    = document.getElementById('addGoal');
+    const saveBtn       = document.getElementById('saveBtn');
+    const printBtn      = document.getElementById('printBtn');
+    const copyNextBtn   = document.getElementById('copyNextBtn');
+    const clearBtn      = document.getElementById('clearBtn');
+    const weekTableBody = document.getElementById('weekTableBody');
+    const weekFreqEl    = document.getElementById('weekFreq');
+
+    const KEY = LOCAL_FOCUS_KEY;
+    const makeGoalId = () =>
+      (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : `goal-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+    let activeGroupId = null;
+    let sharedFocus = null;
+    let focusDataReady = false;
+
+    const fields = {
+      focusArea  : document.getElementById('focusArea'),
+      customTitle: document.getElementById('customTitle'),
+      whyMatters : document.getElementById('whyMatters'),
+      reflection : document.getElementById('reflection'),
+      nextSteps  : document.getElementById('nextSteps')
+    };
+
+    // --- date helpers
+    function startOfWeek(d){ const date=new Date(d); const day=date.getDay(); const diff=(day===0?-6:1)-day; date.setDate(date.getDate()+diff); date.setHours(0,0,0,0); return date; }
+    function endOfWeek(from){ const d=new Date(from); d.setDate(d.getDate()+6); d.setHours(23,59,59,999); return d; }
+    function fmt(d){ return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+    function fmtTime(d){
+      return d.toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+    }
+    function isoDateOnly(d){ return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
+
+    let currentMonday = startOfWeek(new Date());
+    let lastUpdatedAt = null;
+
+    // --- build week rows
+    const PROMPT_SCALE = [
+      { value:"", label:"Select prompt level" },
+      { value:"0", label:"0 – Independent" },
+      { value:"1", label:"1 – 1–2 prompts" },
+      { value:"2", label:"2 – Periodic prompts" },
+      { value:"3", label:"3 – Frequent prompts" },
+      { value:"4", label:"4 – Dependent" }
+    ];
+
+    function buildWeekRows(startDate = currentMonday) {
+      if (!weekTableBody) return;
+      const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      weekTableBody.innerHTML = '';
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate); d.setDate(d.getDate() + i);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${days[i]}</strong><div style="font-size:12px;opacity:.7">${d.toLocaleDateString()}</div></td>
+          <td><input type="checkbox" class="practiced"></td>
+          <td>
+            <select class="input input-chip day-prompt" aria-label="Prompt level used">
+              ${PROMPT_SCALE.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+            </select>
+          </td>
+          <td><input type="text" class="input day-note" placeholder="Quick note…"></td>`;
+        weekTableBody.appendChild(tr);
+      }
+      wireDayInputs();
+    }
+
+    function updateWeekText() {
+      const end = endOfWeek(currentMonday);
+      const stamp = lastUpdatedAt || new Date();
+      const updatedLabel = `Updated ${fmtTime(stamp)}`;
+      weekRangeText.textContent = `Week of ${fmt(currentMonday)} – ${fmt(end)} • ${updatedLabel}`;
+      if (weekStartPicker) weekStartPicker.value = isoDateOnly(currentMonday);
+      buildWeekRows(currentMonday);
+    }
+
+    // --- goals
+    let goalCount=0;
+    function addGoal(data=null){
+      goalCount++;
+      const tpl=document.getElementById('goalTemplate').content.cloneNode(true);
+      tpl.querySelectorAll('[name^="support-"]').forEach(el=>el.name=`support-${goalCount}`);
+      goalsEl.appendChild(tpl);
+      const node=goalsEl.lastElementChild;
+      node.dataset.goalId = data?.id || makeGoalId();
+      const titleEl=node.querySelector('.goal-title');
+      const checklistInputs=node.querySelectorAll('.checklist input[type="text"]');
+      const notesEl=node.querySelector('.goal-notes');
+      const promptSelect=node.querySelector('.goal-prompt');
+      if (promptSelect){
+        promptSelect.innerHTML = PROMPT_SCALE.map(o=>`<option value="${o.value}">${o.label}</option>`).join('');
+        promptSelect.addEventListener('change', scheduleAutoSave);
+      }
+      titleEl.addEventListener('focus',()=>{ if(titleEl.textContent.trim()==='Goal title') titleEl.textContent=''; });
+      titleEl.addEventListener('blur', scheduleAutoSave);
+      checklistInputs.forEach(inp => inp.addEventListener('input', scheduleAutoSave));
+      notesEl.addEventListener('input', scheduleAutoSave);
+      node.querySelector('.remove-goal').addEventListener('click',()=>node.remove());
+      if(data){
+        titleEl.textContent=data.title||'Goal title';
+        checklistInputs.forEach((inp,i)=>inp.value=data.steps?.[i]||'');
+        if (promptSelect) promptSelect.value = data.promptGoal || data.support || '';
+        notesEl.value=data.notes||'';
+      }
+    }
+
+    // --- persistence helpers
+    const getV = (el, f='') => (el && typeof el.value !== 'undefined') ? el.value : f;
+    const setV = (el, v='')   => { if (el && typeof el.value !== 'undefined') el.value = v; };
+    const setChecked = (el,v) => { if (el) el.checked = !!v; };
+
+    function collectGoals(){
+      return Array.from(goalsEl.querySelectorAll('.goal')).map(g => {
+        const title   = (g.querySelector('.goal-title')?.textContent || '').trim();
+        const steps   = Array.from(g.querySelectorAll('.checklist input[type="text"]')).map(i => i.value || '');
+        const promptGoal = g.querySelector('.goal-prompt')?.value || '';
+        const notes   = g.querySelector('.goal-notes')?.value || '';
+        const id      = g.dataset.goalId || makeGoalId();
+        return { id, title, steps, promptGoal, notes };
+      });
+    }
+    function hydrateGoals(goals){
+      goalsEl.innerHTML = '';
+      const list = withGoalIds(goals && goals.length ? goals : [{}]);
+      list.forEach(g => addGoal(g));
+    }
+
+    function collectDays(){
+      return Array.from(weekTableBody.querySelectorAll('tr')).map(tr => ({
+        practiced: !!tr.querySelector('.practiced')?.checked,
+        promptLevel: tr.querySelector('.day-prompt')?.value || '',
+        note: tr.querySelector('.day-note')?.value || ''
+      }));
+    }
+    function hydrateDays(days){
+      if (!days || days.length !== 7) return;
+      Array.from(weekTableBody.querySelectorAll('tr')).forEach((tr, i) => {
+        setChecked(tr.querySelector('.practiced'), !!days[i].practiced);
+        setV(tr.querySelector('.day-prompt'), days[i].promptLevel || '');
+        setV(tr.querySelector('.day-note'), days[i].note || '');
+      });
+    }
+
+    let autoSaveTimer = null;
+    function scheduleAutoSave(){
+      if (!focusDataReady) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        save(true).catch(()=>{});
+      }, 800);
+    }
+
+    async function persistShared(data){
+      try{
+        const session = getSessionFromStorage();
+        const userId = session?.user?.id || null;
+        const gid = activeGroupId || await ensureGroupId(userId);
+        if (!gid) return;
+        activeGroupId = gid;
+        await saveFocusForGroup(gid, data);
+        sharedFocus = data;
+      } catch (error){
+        console.warn('focus save (shared) failed', error);
+      }
+    }
+
+    async function save(silent = false){
+      try{
+        const now = new Date();
+        const data = {
+          weekStart:     isoDateOnly(currentMonday),
+          weekFrequency: getV(weekFreqEl, 'Daily'),
+          focusArea:     getV(fields.focusArea, 'communication'),
+          customTitle:   getV(fields.customTitle, ''),
+          whyMatters:    getV(fields.whyMatters, ''),
+          reflection:    getV(fields.reflection, ''),
+          nextSteps:     getV(fields.nextSteps, ''),
+          goals:         collectGoals(),
+          days:          collectDays(),
+          savedAt:       now.toISOString()
+        };
+        writeLocalFocusDraft(data);
+        await persistShared(data);
+        lastUpdatedAt = now;
+        updateWeekText();
+        if (!silent) alert('Saved!');
+      }catch(e){
+        console.error('Save failed', e);
+        if (!silent) alert('Save failed. See console.');
+      }
+    }
+    function applyFocusData(data){
+      if (!data) {
+        init(true);
+        return;
+      }
+      const normalized = {
+        ...data,
+        goals: withGoalIds(data.goals || []),
+      };
+      if (normalized.weekStart) currentMonday = startOfWeek(new Date(normalized.weekStart));
+      lastUpdatedAt = normalized.updated_at
+        ? new Date(normalized.updated_at)
+        : (normalized.savedAt ? new Date(normalized.savedAt) : new Date());
+      updateWeekText();
+      if (fields.focusArea) fields.focusArea.value = normalized.focusArea || fields.focusArea.value;
+      setV(fields.customTitle, normalized.customTitle || '');
+      setV(fields.whyMatters,  normalized.whyMatters  || '');
+      weekFreqEl.value = normalized.weekFrequency || 'Daily';
+      hydrateGoals(normalized.goals || []);
+      hydrateDays(normalized.days || []);
+      setV(fields.reflection, normalized.reflection || '');
+      setV(fields.nextSteps,  normalized.nextSteps  || '');
+    }
+
+    async function load(){
+      const sharedLoaded = await loadSharedFocus();
+      let localSnapshot = null;
+      if (!sharedLoaded) {
+        localSnapshot = hydrateFromLocal();
+      }
+      focusDataReady = true;
+      wireDayInputs();
+      if (!sharedLoaded && localSnapshot) {
+        try {
+          await persistShared(localSnapshot);
+        } catch (error) {
+          console.warn('focus sync (local→shared) failed', error);
+        }
+      }
+    }
+
+    async function loadSharedFocus(){
+      try{
+        const { focus, groupId } = await loadFocusForCurrentUser();
+        if (groupId) activeGroupId = groupId;
+        if (focus){
+          sharedFocus = focus;
+          applyFocusData(focus);
+          writeLocalFocusDraft(focus);
+          return true;
+        }
+      } catch (error){
+        console.warn('focus shared load failed', error);
+      }
+      // DEMO fallback
+      const demo = {
+        weekStart: '2026-01-26',
+        focusArea: 'Communication',
+        customTitle: 'Ask for help at the store',
+        whyMatters: 'Build confidence in requesting assistance in public settings.',
+        nextSteps: 'Use visual prompt card, then fade to verbal prompt.',
+        goals: [
+          { id:'g1', title:'Ask for help', promptGoal: 2, steps:['Practice greeting','Use help phrase','Thank staff'], notes:'Short, calm prompts' },
+          { id:'g2', title:'Wait in line calmly', promptGoal: 3, steps:['Stand in line','Hands to self','Deep breaths'], notes:'Use timer' },
+          { id:'g3', title:'Choose an item', promptGoal: 1, steps:['Pick item','Check price','Place in basket'], notes:'Reduce prompts' }
+        ],
+        days: [
+          { day:'Mon', practiced:true, promptLevel:3, note:'Used visual card' },
+          { day:'Tue', practiced:false, promptLevel:null, note:'' },
+          { day:'Wed', practiced:true, promptLevel:2, note:'Less prompting' },
+          { day:'Thu', practiced:true, promptLevel:2, note:'Short wait' },
+          { day:'Fri', practiced:true, promptLevel:1, note:'Independent ask' }
+        ],
+        updated_at: new Date().toISOString()
+      };
+      sharedFocus = demo;
+      applyFocusData(demo);
+      writeLocalFocusDraft(demo);
+      return true;
+    }
+
+    function hydrateFromLocal(){
+      try{
+        const data = readLocalFocusDraft();
+        if (!data){ init(true); return null; }
+        applyFocusData(data);
+        return data;
+      }catch(e){
+        console.error('Load failed', e);
+        init(true);
+        return null;
+      }
+    }
+
+    function clearAll(){
+      if (!confirm('Clear everything on this page?')) return;
+      try{
+        clearLocalFocusDraft();
+        init(true);
+        scheduleAutoSave();
+      }catch(e){
+        console.error('Clear failed', e);
+      }
+    }
+
+    function copyToNextWeek(){
+      currentMonday.setDate(currentMonday.getDate() + 7);
+      updateWeekText();
+      // keep goals/notes; clear daily tracker + reflection
+      Array.from(weekTableBody.querySelectorAll('tr')).forEach(tr => {
+        setChecked(tr.querySelector('.practiced'), false);
+        setV(tr.querySelector('.day-prompt'), '');
+        setV(tr.querySelector('.day-note'), '');
+      });
+      setV(fields.reflection, '');
+      scheduleAutoSave();
+    }
+
+    if (weekStartPicker) {
+      weekStartPicker.addEventListener('change', () => {
+        if (!weekStartPicker.value) return;
+        currentMonday = startOfWeek(new Date(weekStartPicker.value));
+        lastUpdatedAt = new Date();
+        updateWeekText();
+        scheduleAutoSave();
+      });
+    }
+
+    // --- initialize page (rebuild rows + one default goal)
+    function init(resetWeek=false){
+      if (resetWeek) currentMonday = startOfWeek(new Date());
+      lastUpdatedAt = new Date();
+      updateWeekText();                 // builds the 7 day rows
+      goalsEl.innerHTML = '';
+      addGoal();                        // ensure first goal exists
+      setV(fields.customTitle,'');
+      setV(fields.whyMatters,'');
+      setV(fields.reflection,'');
+      setV(fields.nextSteps,'');
+      if (fields.focusArea) fields.focusArea.selectedIndex = 5; // Communication default
+      weekFreqEl.value = 'Daily';
+    }
+
+    function wireDayInputs(){
+      if (!weekTableBody) return;
+      weekTableBody.querySelectorAll('.practiced, .day-prompt, .day-note').forEach(el => {
+        const event = el.matches('.day-note') ? 'input' : 'change';
+        if (!el.dataset.focusBound){
+          el.addEventListener(event, scheduleAutoSave);
+          el.dataset.focusBound = '1';
+        }
+      });
+    }
+
+    // --- wire buttons
+    addGoalBtn  .addEventListener('click', () => { addGoal(); scheduleAutoSave(); });
+    saveBtn     .addEventListener('click', () => save());
+    printBtn    .addEventListener('click', () => window.print());
+    copyNextBtn .addEventListener('click', copyToNextWeek);
+    clearBtn    .addEventListener('click', clearAll);
+    weekFreqEl?.addEventListener('change', scheduleAutoSave);
+    Object.values(fields).forEach(el => {
+      if (!el) return;
+      const evt = el.tagName === 'TEXTAREA' ? 'input' : 'change';
+      el.addEventListener(evt, scheduleAutoSave);
+    });
+
+    // first render + try to load saved data
+    init();      // builds rows + 1 goal so page isn't empty
+    load();
+
+    // expose for console if needed
+    window.save = save; window.load = load;
+  </script>
+
+<!-- app scripts -->
+<script type="module" src="./script.js?v=2025.01.09E"></script>
+<script type="module" src="./hide-group-ui.js?v=2025.01.09E"></script>
+<script type="module" src="./avatar-float.js?v=2025.01.09E"></script>
+<script type="module" src="./js/focus-week-supabase.js?v=2025.01.09E"></script>
+
+<!-- ✅ Restore original hamburger menu + bottom tabbar -->
+<script defer src="./ui-shell.js?v=2025.01.09E"></script>
+<script defer src="./scripts/appbar-drawer.js?v=2025.01.09E"></script>
+
+</body>
+</html>

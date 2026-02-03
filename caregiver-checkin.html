@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Caregiver Check-In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css?v=2025.01.09E"/>
+  <style>
+    html,body{height:auto!important;min-height:100%;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+    body{margin:0}
+    .page-wrap{max-width:940px;margin:24px auto 96px;padding:16px;background:rgba(255,255,255,.92);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    h1{margin:8px 0 6px;font-size:clamp(28px,4.2vw,44px)}
+    .sub{color:#6b7280;margin-bottom:12px}
+    .progress{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin:.25rem 0 .5rem}
+    .prog-item{display:grid;gap:6px;cursor:pointer}
+    .prog-label{text-align:center;font-size:13px;color:#6b7280;font-weight:700}
+    .seg{height:8px;background:#e9edf2;border-radius:999px}
+    .seg.active{background:linear-gradient(90deg,#4ade80,#22c55e)}
+    .seg.done{background:#c7f9d6}
+    .top-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin:4px 0 10px}
+    .btn{appearance:none;border:1px solid #e5e7eb;background:#fff;color:#111827;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
+    .btn.primary{background:linear-gradient(180deg,#4ade80,#22c55e);border-color:#22c55e;color:#053a19;box-shadow:0 6px 16px rgba(16,185,129,.25)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    fieldset.panel{background:#fff;border-radius:16px;border:2px dashed #d8dbe2;padding:16px;margin:10px 0 20px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
+    legend{display:none}
+    .section-title{font-weight:900;margin-bottom:8px;border-bottom:1px solid #ececec;padding-bottom:6px}
+    .subcap{font-weight:800;color:#374151;margin:16px 0 6px}
+    label{display:block;margin:10px 0 6px;font-weight:700}
+    input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cfd6df;border-radius:12px;font-size:16px;background:#fff}
+    textarea{min-height:84px;resize:vertical}
+    input[type="range"]{width:100%}
+    .row{display:grid;gap:12px}
+    .cols-3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+    .cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .compact{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+    .yn{width:min(100%,200px)}
+    .controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .left-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .savedAt,.tip,.muted{color:#6b7280;font-size:12px}
+    .soft{border:0;height:1px;background:#eceff3;margin:10px 0}
+    .step{display:none}
+    .step.active{display:block}
+    #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:#111;color:#fff;padding:10px 14px;border-radius:10px;font-weight:800;z-index:9999;opacity:0;transition:opacity .2s}
+    .focus-panel{background:#fffdf5;border:1px dashed #fcd34d;margin-bottom:18px;padding:14px;border-radius:14px}
+    .focus-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+    .focus-panel .section-title{margin:0;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:#a16207}
+    .focus-panel .focus-summary{flex:1;margin:0;font-weight:600;color:#92400e;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .focus-panel .focus-summary strong{font-size:15px;color:#7c2d12}
+    .focus-panel .focus-summary .focus-title-text{font-weight:700;color:#7c2d12}
+    .focus-panel .focus-summary .focus-chip{background:#fff1c2;border-radius:999px;padding:2px 10px;font-size:13px;color:#92400e}
+    .focus-panel .focus-summary .focus-range{font-size:12px;color:#b45309;font-style:italic}
+    .focus-panel .focus-summary .focus-dot{color:#eab308;font-weight:700}
+    .focus-details{margin:0 0 6px;font-size:13px;color:#7c2d12}
+    .focus-details.is-hidden{display:none}
+    .focus-goals{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+    .focus-goals li{background:#fff;border:1px solid #fde68a;border-radius:12px;padding:10px;font-size:14px;line-height:1.4}
+    .focus-goals li strong{display:block;font-size:15px;margin-bottom:2px}
+    .focus-planner-stats{color:#92400e;font-size:13px;margin:4px 0 0}
+    .focus-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 10px}
+    .focus-link{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#fef3c7;border:1px solid #fcd34d;color:#92400e;font-weight:600;text-decoration:none;font-size:14px}
+    .focus-track-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}
+    .focus-track-item{background:#fff;border:1px solid #fde68a;border-radius:12px;padding:10px;display:grid;gap:8px}
+    .focus-track-item label{margin:0;font-weight:600;color:#92400e;display:flex;align-items:center;gap:8px}
+    .focus-track-item textarea{width:100%;min-height:60px;border-radius:10px}
+    .focus-track-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .focus-track-practiced{display:flex;align-items:center;gap:12px;font-weight:700;color:#92400e}
+    .focus-track-practiced input{width:26px;height:26px;cursor:pointer;accent-color:#f59e0b}
+    .focus-track-target{font-size:12px;color:#b45309;font-weight:600}
+    .focus-track-prompt select{min-width:200px}
+    .adl-entry-list{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}
+    .adl-entry{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
+    .adl-entry strong{display:block;font-size:15px;margin-bottom:2px;color:#111827}
+    .adl-entry small{display:block;color:#6b7280;font-size:12px}
+    .adl-entry-actions{display:flex;gap:8px;align-items:center}
+    .entry-date-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:6px 0 14px}
+    .entry-date-row label{margin:0;font-weight:800}
+    .entry-date-row input[type="date"]{padding:8px 10px;border:1px solid #d1d5db;border-radius:10px;font-size:15px}
+    .entry-date-row .muted{font-size:13px}
+    .movement-panel,.temp-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px;margin-top:12px}
+    .movement-head,.temp-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .movement-title,.temp-title{font-weight:900}
+    .movement-desc,.temp-desc{margin:4px 0 0;color:#64748b;font-size:13px}
+    .movement-yn,.temp-yn{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+    .movement-pill,.temp-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1d5db;border-radius:999px;padding:6px 10px;background:#fff;font-weight:700}
+    .movement-pill input,.temp-pill input{width:auto}
+    .movement-body.is-collapsed,.temp-body.is-collapsed{display:none}
+    .movement-row,.temp-row{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:end}
+    .movement-label,.temp-label{font-weight:800;color:#1f2937;margin-bottom:6px}
+    .movement-chips,.temp-chips{display:flex;flex-wrap:wrap;gap:8px}
+    .movement-chip,.temp-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5f5;border-radius:10px;padding:6px 10px;background:#fff;font-weight:700;font-size:14px}
+    .movement-chip input,.temp-chip input{width:auto}
+    .movement-severity{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+    .movement-sev-btn{border:1px solid #cbd5f5;background:#fff;color:#1e3a8a;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer;min-width:36px}
+    .movement-sev-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+    .movement-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .movement-details{margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
+    .movement-details.is-hidden{display:none}
+    .movement-grid,.temp-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+    .movement-inline-input,.temp-inline-input{display:flex;gap:8px;align-items:center}
+    .movement-inline-input input[type="text"],.temp-inline-input input[type="text"]{flex:1}
+    .yn-pill-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .yn-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1d5db;border-radius:999px;padding:6px 10px;background:#fff;font-weight:700}
+    .yn-pill input{width:auto}
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <h1>Caregiver Check-In</h1>
+    <div class="sub">Autosaves as you type. Use <strong>Save &amp; Next</strong> to step through.</div>
+
+    <section class="panel focus-panel" id="caregiver-focus-panel">
+      <div class="focus-header">
+        <p class="focus-summary" id="focusSummary">Loading weekly focus…</p>
+      </div>
+      <p class="focus-details is-hidden" id="focusDetails"></p>
+      <p class="focus-planner-stats is-hidden" id="focusPlannerStats"></p>
+      <div class="focus-actions">
+        <a class="focus-link" href="focus-week.html" target="_blank" rel="noopener">Open Focus Planner ↗</a>
+      </div>
+      <ul class="focus-goals" id="focusGoalsList"></ul>
+      <div id="focusTrackingList" class="focus-track-list"></div>
+    </section>
+
+    <div class="progress" id="progress">
+      <div class="prog-item" data-step="0"><div class="prog-label">Physical</div><div class="seg active"></div></div>
+      <div class="prog-item" data-step="1"><div class="prog-label">Behavior</div><div class="seg"></div></div>
+      <div class="prog-item" data-step="2"><div class="prog-label">Vocational</div><div class="seg"></div></div>
+      <div class="prog-item" data-step="3"><div class="prog-label">Home / Family</div><div class="seg"></div></div>
+      <div class="prog-item" data-step="4"><div class="prog-label">Community</div><div class="seg"></div></div>
+      <div class="prog-item" data-step="5"><div class="prog-label">Daily Living</div><div class="seg"></div></div>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn ghost" id="toggleAll">Show all sections</button>
+      <button class="btn" id="resumeDraftBtn" style="display:none" disabled>Resume last draft</button>
+    </div>
+
+    <form id="cg-form" novalidate>
+      <!-- STEP 1: Physical -->
+      <div class="step active" data-step="0">
+        <fieldset class="panel">
+          <div class="entry-date-row">
+            <label for="entryDateInput">Date of shift:</label>
+            <input type="date" id="entryDateInput" name="entry_date"/>
+            <span class="muted">Pick another day if you missed logging it.</span>
+          </div>
+          <div class="section-title">Physical Factors</div>
+          <div class="row cols-3 compact">
+            <label>Appears in good health?
+              <div class="yn-pill-group" role="group" aria-label="Appears in good health">
+                <label class="yn-pill"><input type="radio" name="appears_good_health" value="Yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="appears_good_health" value="No"> No</label>
+              </div>
+            </label>
+            <label>Appears tired?
+              <div class="yn-pill-group" role="group" aria-label="Appears tired">
+                <label class="yn-pill"><input type="radio" name="appears_tired" value="Yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="appears_tired" value="No"> No</label>
+              </div>
+            </label>
+            <label>Hours of sleep:
+              <select name="hours_sleep" class="yn"><option value="">Select</option><option>4</option><option>6</option><option>8</option><option>10+</option></select>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:28px">
+              <input type="checkbox" name="sleep_onset_difficulty" style="width:auto"/>
+              <span>Difficulty falling asleep (took ~2+ hours)</span>
+            </label>
+            <label>Woke up during the night?
+              <div class="yn-pill-group" role="group" aria-label="Woke up during the night">
+                <label class="yn-pill"><input type="radio" name="night_wake_flag" id="night_wake_flag_yes" value="Yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="night_wake_flag" id="night_wake_flag_no" value="No"> No</label>
+              </div>
+            </label>
+            <label id="nightWakeCountWrap" style="display:none">How many times?
+              <select name="night_wake_count" id="night_wake_count" class="yn">
+                <option value="">Select</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4+</option>
+              </select>
+            </label>
+          </div>
+          <div class="row cols-3 compact">
+            <label>Had a BM today?
+              <div class="yn-pill-group" role="group" aria-label="Had a BM today">
+                <label class="yn-pill"><input type="radio" name="had_bm" id="had_bm_yes" value="yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="had_bm" id="had_bm_no" value="no"> No</label>
+              </div>
+            </label>
+            <label for="caregiver_name">Caregiver Name:
+              <input id="caregiver_name" name="caregiver_name" type="text" placeholder="Enter your name" required />
+            </label>
+            <label>PRN sleep aid given?
+              <div class="yn-pill-group" role="group" aria-label="PRN sleep aid given">
+                <label class="yn-pill"><input type="radio" name="prn_given" id="prn_given_yes" value="yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="prn_given" id="prn_given_no" value="no"> No</label>
+              </div>
+            </label>
+            <label id="prnNameWrap" style="display:none">PRN sleep aid name:
+              <input type="text" name="prn_name" placeholder="Name of PRN"/>
+            </label>
+            <label>Time PRN was given:<input type="time" name="prn_time"/></label>
+          </div>
+          <div class="movement-panel" id="movementSymptomsPanel">
+            <div class="movement-head">
+              <div>
+                <div class="movement-title">Movement Symptoms <span class="muted">(Tremor / Dyskinesia)</span></div>
+                <p class="movement-desc">Track unusual movements, shaking, grimacing, or repetitive motions.</p>
+              </div>
+            </div>
+
+            <div class="movement-yn" role="group" aria-label="Movement symptoms today">
+              <strong>Movement symptoms today?</strong>
+              <label class="movement-pill"><input type="radio" name="movement_present" value="no" checked> No</label>
+              <label class="movement-pill"><input type="radio" name="movement_present" value="yes"> Yes</label>
+            </div>
+
+            <div class="movement-body is-collapsed" data-movement-body-wrap>
+              <div class="movement-row">
+                <div>
+                  <div class="movement-label">Main type</div>
+                  <div class="movement-chips">
+                    <label class="movement-chip"><input type="radio" name="movement_main_type" value="hands_shaking">Hands shaking</label>
+                    <label class="movement-chip"><input type="radio" name="movement_main_type" value="face_mouth">Face / mouth</label>
+                    <label class="movement-chip"><input type="radio" name="movement_main_type" value="arms_legs">Arms / legs</label>
+                    <label class="movement-chip"><input type="radio" name="movement_main_type" value="other">Other</label>
+                  </div>
+                </div>
+                <div>
+                  <div class="movement-label">Severity</div>
+                  <div class="movement-severity" data-movement-severity>
+                    <button class="movement-sev-btn" type="button" data-sev="0">0</button>
+                    <button class="movement-sev-btn" type="button" data-sev="1">1</button>
+                    <button class="movement-sev-btn" type="button" data-sev="2">2</button>
+                    <button class="movement-sev-btn" type="button" data-sev="3">3</button>
+                    <button class="movement-sev-btn" type="button" data-sev="4">4</button>
+                  </div>
+                  <input type="hidden" name="movement_severity" id="movement_severity" value=""/>
+                </div>
+              </div>
+
+              <div class="movement-row" style="margin-top:10px">
+                <div>
+                  <div class="movement-label">Times</div>
+                  <div class="movement-chips">
+                    <label class="movement-chip"><input type="checkbox" data-movement-time value="AM">AM</label>
+                    <label class="movement-chip"><input type="checkbox" data-movement-time value="PM">PM</label>
+                    <label class="movement-chip"><input type="checkbox" data-movement-time value="Overnight">Overnight</label>
+                  </div>
+                  <input type="hidden" name="movement_times" id="movement_times" value=""/>
+                </div>
+                <div>
+                  <label class="movement-label" for="movement_notes">Notes (optional)</label>
+                  <input type="text" name="movement_notes" id="movement_notes" placeholder="Short note, e.g. shaky at breakfast"/>
+                </div>
+              </div>
+
+              <div class="movement-actions">
+                <button class="btn" type="button" id="movementSameBtn">Same as last check-in</button>
+                <button class="btn" type="button" id="movementDetailsToggle" aria-expanded="false" aria-controls="movementDetails">Show body map &amp; triggers</button>
+              </div>
+
+              <div class="movement-details is-hidden" id="movementDetails">
+                <div class="movement-label">Body map</div>
+                <div class="movement-grid">
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="eyes_blinking">Eyes blinking / eye movements</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="face_grimacing">Face grimacing</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="mouth_lips">Mouth / lips (smacking / chewing)</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="tongue_movements">Tongue movements</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="jaw_movements">Jaw movements</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="hands_tremor">Hands tremor</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="arms_jerks">Arms jerks / “air punching”</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="legs_feet">Legs / feet tapping / kicking</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="neck_trunk">Neck / trunk movements</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-body value="other_movement">Other movement</label>
+                </div>
+                <div class="movement-inline-input" style="margin-top:8px">
+                  <input type="text" name="movement_other_text" id="movement_other_text" placeholder="Other movement (optional)"/>
+                </div>
+                <input type="hidden" name="movement_body_map" id="movement_body_map" value=""/>
+
+                <div class="soft" style="margin:12px 0"></div>
+
+                <div class="movement-label">Frequency</div>
+                <div class="movement-chips">
+                  <label class="movement-chip"><input type="radio" name="movement_frequency" value="once">Once</label>
+                  <label class="movement-chip"><input type="radio" name="movement_frequency" value="few_times">A few times</label>
+                  <label class="movement-chip"><input type="radio" name="movement_frequency" value="often">Often</label>
+                  <label class="movement-chip"><input type="radio" name="movement_frequency" value="nearly_constant">Nearly constant</label>
+                </div>
+
+                <div class="soft" style="margin:12px 0"></div>
+
+                <div class="movement-label">Triggers</div>
+                <div class="movement-grid">
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="stress">Stress / anxiety</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="around_meds">Around meds</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="tired_sleep">Tired / poor sleep</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="before_eating">Before eating</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="after_eating">After eating</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="excitement">Excited / overstimulated</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="unknown">Unknown</label>
+                  <label class="movement-chip"><input type="checkbox" data-movement-trigger value="other">Other</label>
+                </div>
+                <div class="movement-inline-input" style="margin-top:8px">
+                  <input type="text" name="movement_trigger_other" id="movement_trigger_other" placeholder="Other trigger (optional)"/>
+                </div>
+                <input type="hidden" name="movement_triggers" id="movement_triggers" value=""/>
+
+                <div class="soft" style="margin:12px 0"></div>
+
+                <div class="movement-row">
+                  <div>
+                    <div class="movement-label">Interfered with function?</div>
+                    <div class="movement-chips">
+                      <label class="movement-chip"><input type="radio" name="movement_interfered" value="no">No</label>
+                      <label class="movement-chip"><input type="radio" name="movement_interfered" value="yes">Yes</label>
+                    </div>
+                    <input type="text" name="movement_interfered_notes" placeholder="Notes (optional)" />
+                  </div>
+                  <div>
+                    <div class="movement-label">Awareness</div>
+                    <div class="movement-chips">
+                      <label class="movement-chip"><input type="radio" name="movement_awareness" value="unaware">Unaware</label>
+                      <label class="movement-chip"><input type="radio" name="movement_awareness" value="aware_not_bothered">Aware not bothered</label>
+                      <label class="movement-chip"><input type="radio" name="movement_awareness" value="aware_bothered">Aware bothered</label>
+                      <label class="movement-chip"><input type="radio" name="movement_awareness" value="unknown">Unknown</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="movement-row" style="margin-top:10px">
+                  <div>
+                    <div class="movement-label">Safety risk?</div>
+                    <div class="movement-chips">
+                      <label class="movement-chip"><input type="radio" name="movement_safety_risk" value="no">No</label>
+                      <label class="movement-chip"><input type="radio" name="movement_safety_risk" value="yes">Yes</label>
+                    </div>
+                    <input type="text" name="movement_safety_notes" placeholder="Safety notes (optional)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="temp-panel" id="tempPanel">
+            <div class="temp-head">
+              <div>
+                <div class="temp-title">Temperature</div>
+                <p class="temp-desc">Track low-grade temperature and related symptoms prior to tests.</p>
+              </div>
+            </div>
+
+            <div class="temp-yn" role="group" aria-label="Temperature today">
+              <strong>Temperature today?</strong>
+              <label class="temp-pill"><input type="radio" name="temp_present" value="no" checked> No</label>
+              <label class="temp-pill"><input type="radio" name="temp_present" value="yes"> Yes</label>
+            </div>
+
+            <div class="temp-body is-collapsed" data-temp-body-wrap>
+              <div class="temp-row">
+                <div>
+                  <label class="temp-label" for="temp_value">Temperature</label>
+                  <select name="temp_value" id="temp_value">
+                    <option value="">Select temp</option>
+                    <option value="96.0">96.0°F</option>
+                    <option value="96.5">96.5°F</option>
+                    <option value="97.0">97.0°F</option>
+                    <option value="97.5">97.5°F</option>
+                    <option value="98.0">98.0°F</option>
+                    <option value="98.6">98.6°F</option>
+                    <option value="99.0">99.0°F</option>
+                    <option value="99.5">99.5°F</option>
+                    <option value="100.0">100.0°F</option>
+                    <option value="100.4">100.4°F</option>
+                    <option value="101.0">101.0°F</option>
+                    <option value="101.5">101.5°F</option>
+                    <option value="102.0">102.0°F</option>
+                    <option value="102.5">102.5°F</option>
+                    <option value="103.0">103.0°F</option>
+                    <option value="104.0">104.0°F</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="temp-label" for="temp_method">How measured</label>
+                  <select name="temp_method" id="temp_method">
+                    <option value="">Select method</option>
+                    <option value="oral">Oral</option>
+                    <option value="ear">Ear</option>
+                    <option value="forehead">Forehead</option>
+                    <option value="axillary">Underarm</option>
+                    <option value="temporal">Temporal</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="temp-inline-input" style="margin-top:8px">
+                <input type="text" name="temp_other_value" id="temp_other_value" placeholder="Other temperature or method (optional)"/>
+              </div>
+
+              <div class="temp-label" style="margin-top:12px">Symptoms</div>
+              <div class="temp-grid">
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="runny_nose">Runny nose</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="cough">Cough</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="congestion">Congestion</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="sore_throat">Sore throat</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="chills">Chills</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="headache">Headache</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="fatigue">Fatigue</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="body_aches">Body aches</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="nausea">Nausea</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="vomiting">Vomiting</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="diarrhea">Diarrhea</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="rash">Rash</label>
+                <label class="temp-chip"><input type="checkbox" data-temp-symptom value="other">Other</label>
+              </div>
+              <div class="temp-inline-input" style="margin-top:8px">
+                <input type="text" name="temp_symptom_other" id="temp_symptom_other" placeholder="Other symptom (optional)"/>
+              </div>
+              <input type="hidden" name="temp_symptoms" id="temp_symptoms" value=""/>
+
+              <label class="temp-label" for="temp_notes" style="margin-top:10px">Notes (optional)</label>
+              <input type="text" name="temp_notes" id="temp_notes" placeholder="Short note, e.g. warm at 7am"/>
+            </div>
+          </div>
+          <label>Caregiver notes:<textarea name="physical_notes" placeholder="Optional notes..."></textarea></label>
+          <div class="controls">
+            <div class="left-actions"><button class="btn" type="button" data-save>Save</button><span class="savedAt" data-savedat></span></div>
+            <div><button class="btn primary" type="button" data-next>Save &amp; Next →</button></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- STEP 2: Behavior -->
+      <div class="step" data-step="1">
+        <fieldset class="panel">
+          <div class="section-title">Behavioral Observations</div>
+          <div class="row cols-3 compact">
+            <label>Did the individual display any aggression?
+              <select name="aggression_flag" id="aggression_flag" class="yn"><option value="">Select</option><option>No</option><option>Yes</option></select>
+            </label>
+            <div id="aggressionDetails" class="row cols-3 compact" style="margin:0">
+              <label>Aggression type:
+                <select name="aggression_type" id="aggression_type" disabled>
+                  <option value="">Select type</option>
+                  <option>Posturing</option><option>Physical</option><option>Verbal</option><option>Self-harm</option>
+                </select>
+              </label>
+              <label>Intensity (0–5):
+                <input type="range" min="0" max="5" step="1" value="0" name="aggression_intensity" id="aggression_intensity" disabled/>
+                <div class="savedAt"><span id="intensityVal">0</span></div>
+              </label>
+            </div>
+          </div>
+          <label id="aggressionNotesWrap">Aggression notes:
+            <textarea name="aggression_notes" placeholder="What happened, what helped"></textarea>
+          </label>
+          <div class="row cols-3 compact" id="aggressionPrnRow" style="margin-top:6px;display:none">
+            <label>PRN given for aggression?
+              <div class="yn-pill-group" role="group" aria-label="PRN given for aggression">
+                <label class="yn-pill"><input type="radio" name="prn_aggression_given" id="prn_aggression_given_yes" value="yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="prn_aggression_given" id="prn_aggression_given_no" value="no"> No</label>
+              </div>
+            </label>
+            <label id="prnAggressionNameWrap" style="display:none">PRN name (aggression):
+              <input type="text" name="prn_aggression_name" placeholder="Name of PRN"/>
+            </label>
+            <label id="prnAggressionTimeWrap" style="display:none">Time PRN was given:
+              <input type="time" name="prn_aggression_time"/>
+            </label>
+          </div>
+          <hr class="soft"/>
+          <div class="subcap">Mania, focus, appetite</div>
+          <div class="row cols-3 compact">
+            <label>Did the individual seem manic?
+              <select name="manic_flag" id="manic_flag" class="yn">
+                <option value="">Select</option>
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </label>
+            <label>Mania intensity (0–5):
+              <input type="range" min="0" max="5" step="1" value="0" name="manic_intensity" id="manic_intensity" disabled/>
+              <div class="savedAt"><span id="manicIntensityVal">0</span></div>
+            </label>
+            <label>Trouble focusing?
+              <select name="focus_trouble_flag" id="focus_trouble_flag" class="yn">
+                <option value="">Select</option>
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </label>
+            <label>Change in appetite?
+              <select name="appetite_change_flag" id="appetite_change_flag" class="yn">
+                <option value="">Select</option>
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </label>
+            <label id="appetiteNotesWrap" style="display:none">Appetite notes:
+              <input type="text" name="appetite_notes" placeholder="e.g., ate much less than usual"/>
+            </label>
+          </div>
+          <div class="row cols-3 compact" id="maniaPrnRow" style="margin-top:6px">
+            <label>PRN given for mania?
+              <div class="yn-pill-group" role="group" aria-label="PRN given for mania">
+                <label class="yn-pill"><input type="radio" name="prn_mania_given" id="prn_mania_given_yes" value="yes"> Yes</label>
+                <label class="yn-pill"><input type="radio" name="prn_mania_given" id="prn_mania_given_no" value="no"> No</label>
+              </div>
+            </label>
+            <label id="prnManiaNameWrap" style="display:none">PRN name (mania):
+              <input type="text" name="prn_mania_name" placeholder="Name of PRN"/>
+            </label>
+            <label id="prnManiaTimeWrap" style="display:none">Time PRN was given:
+              <input type="time" name="prn_mania_time"/>
+            </label>
+          </div>
+          <div class="subcap">Anomalies <span class="muted">(unexpected behaviors, mood shifts, or unusual reactions)</span></div>
+          <div class="row cols-2">
+            <label>Noticed anything unusual?
+              <select name="behavior_anomaly_flag" id="behavior_anomaly_flag" class="yn"><option value="">Select</option><option>No</option><option>Yes</option></select>
+            </label>
+            <label id="anomalyTriggerWrap" style="display:none">Trigger or context:
+              <input type="text" name="behavior_anomaly_trigger" placeholder="e.g., loud noise, new staff, schedule change"/>
+            </label>
+          </div>
+          <label id="anomalyNotesWrap" style="display:none">Anomaly details:<textarea name="behavior_anomaly_notes" placeholder="Describe what felt off, how long it lasted, what helped"></textarea></label>
+
+          <label>Behavior notes:<textarea name="behavior_notes" placeholder="What happened, what helped"></textarea></label>
+          <div class="controls">
+            <div class="left-actions"><button class="btn" type="button" data-save>Save</button><span class="savedAt" data-savedat></span></div>
+            <div><button class="btn" type="button" data-prev>← Back</button><button class="btn primary" type="button" data-next>Save &amp; Next →</button></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- STEP 3: Vocational -->
+      <div class="step" data-step="2">
+        <fieldset class="panel">
+          <div class="section-title">Vocational Participation</div>
+          <div class="row cols-3 compact">
+            <label>Participated in vocational activity?
+              <select name="vocational_participation" id="vocational_participation" class="yn"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+            <div id="vocationalDetails" class="row cols-3 compact" style="margin:0;display:none">
+              <label>Time in vocational activity:
+                <select name="vocational_time">
+                  <option value="">Select duration</option>
+                  <option>0</option><option>15–30 min</option><option>30–60 min</option><option>1–2 hrs</option><option>2+ hrs</option>
+                </select>
+              </label>
+              <label>Prompting (vocational):
+                <select name="vocational_prompting" data-scale="prompting"></select>
+              </label>
+            </div>
+          </div>
+          <label id="vocationalNotesWrap" style="display:none">Vocational notes:<textarea name="vocational_notes" placeholder="Describe tasks, progress, or challenges during vocational time."></textarea></label>
+          <div class="controls">
+            <div class="left-actions"><button class="btn" type="button" data-save>Save</button><span class="savedAt" data-savedat></span></div>
+            <div><button class="btn" type="button" data-prev>← Back</button><button class="btn primary" type="button" data-next>Save &amp; Next →</button></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- STEP 4: Home / Family -->
+      <div class="step" data-step="3">
+        <fieldset class="panel">
+          <div class="section-title">Home / Family Community</div>
+          <div class="row cols-3 compact">
+            <label>Engaged in a home/community activity?
+              <select name="home_activity_flag" id="home_activity_flag" class="yn"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+          <div id="homeDetails" class="row cols-3 compact" style="display:none">
+            <label>Time spent (home):
+              <select name="home_activity_time">
+                <option value="">Select duration</option>
+                <option>0</option><option>15–30 min</option><option>30–60 min</option><option>1–2 hrs</option><option>2+ hrs</option>
+              </select>
+            </label>
+            <label>Prompting (home):
+              <select name="home_activity_prompting" data-scale="prompting"></select>
+            </label>
+          </div>
+          <div id="homeDetailsNotes" class="row cols-2" style="display:none">
+            <label>Home activity type:
+              <select name="home_activity_type">
+                <option value="">Select type</option>
+                <option>Meal with immediate family</option>
+                <option>Meal with extended family</option>
+                <option>Family celebration</option>
+                <option>Visited neighbor</option>
+                <option>Hosted guest</option>
+                <option>Family game/movie night</option>
+                <option>Walk / neighborhood stroll</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Home activity note:<input type="text" name="home_activity_note" placeholder="e.g., hosted grandma for dinner"/></label>
+          </div>
+          <label id="homeNotesWrap" style="display:none">Home / family notes:<textarea name="home_notes" placeholder="Interactions, meals, visitors, or notable moments at home."></textarea></label>
+          <div class="controls">
+            <div class="left-actions"><button class="btn" type="button" data-save>Save</button><span class="savedAt" data-savedat></span></div>
+            <div><button class="btn" type="button" data-prev>← Back</button><button class="btn primary" type="button" data-next>Save &amp; Next →</button></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- STEP 5: Community / Interaction -->
+      <div class="step" data-step="4">
+        <fieldset class="panel">
+          <div class="section-title">Community &amp; Social Interaction</div>
+          <div class="subcap">Community at large</div>
+          <div class="row cols-3 compact">
+            <label>Engaged in a community-at-large activity?
+              <select name="public_activity_flag" id="public_activity_flag" class="yn"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+          <div id="publicDetails" class="row cols-3 compact" style="display:none">
+            <label>Time spent (community-at-large):
+              <select name="public_activity_time">
+                <option value="">Select duration</option>
+                <option>0</option><option>15–30 min</option><option>30–60 min</option><option>1–2 hrs</option><option>2+ hrs</option>
+              </select>
+            </label>
+            <label>Prompting (community-at-large):
+              <select name="public_activity_prompting" data-scale="prompting"></select>
+            </label>
+          </div>
+          <div id="publicDetailsNotes" class="row cols-2" style="display:none">
+            <label>Community activity type:
+              <select name="public_activity_type">
+                <option value="">Select type</option>
+                <option>Shopping – grocery/retail</option>
+                <option>Library</option>
+                <option>Museum</option>
+                <option>Park/Playground</option>
+                <option>Restaurant/Café</option>
+                <option>Public transit practice</option>
+                <option>Recreation center / gym</option>
+                <option>Sports event</option>
+                <option>Volunteer shift</option>
+                <option>Class / lesson</option>
+                <option>Walk / Stroll</option>
+                <option>Went to store</option>
+                <option>Went to recycling</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Community activity note:<input type="text" name="public_activity_note" placeholder="e.g., went to library, checked out 2 books"/></label>
+          </div>
+          <hr class="soft"/>
+          <div class="subcap">Interactions</div>
+          <div class="row cols-3 compact">
+            <label>Engaged with a community member appropriately?
+              <select name="community_interaction_ok" id="community_interaction_ok" class="yn"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+          <div id="interactionDetails" class="row cols-3 compact" style="display:none">
+            <label>Interaction type:
+              <select name="interaction_type">
+                <option value="">Select type</option>
+                <option>Greeting</option><option>Compliment</option>
+                <option>Introduced self/family</option><option>Asked a question</option><option>Shared space respectfully</option>
+                <option>Small talk</option><option>Requested help</option><option>Offered help</option>
+                <option>Conflict resolution</option><option>Used AAC appropriately</option><option>Maintained eye contact</option><option>Other</option>
+              </select>
+            </label>
+            <label>Prompting (interaction):
+              <select name="interaction_prompting" data-scale="prompting"></select>
+            </label>
+          </div>
+          <div id="interactionDetailsNotes" class="row cols-2" style="display:none">
+            <label>Interaction note:<input type="text" name="interaction_note" placeholder="e.g., greeted neighbor with 'Hi' and smile"/></label>
+          </div>
+          <label id="communityNotesWrap" style="display:none">Community notes:<textarea name="community_notes" placeholder="Additional context for community participation or interactions."></textarea></label>
+          <div class="controls">
+            <div class="left-actions"><button class="btn" type="button" data-save>Save</button><span class="savedAt" data-savedat></span></div>
+            <div><button class="btn" type="button" data-prev>← Back</button><button class="btn primary" type="button" data-next>Save &amp; Next →</button></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- STEP 6: Daily Living -->
+      <div class="step" data-step="5" id="daily-living-step">
+        <fieldset class="panel">
+          <div class="section-title">Daily Living Activities</div>
+          <div class="row cols-2">
+            <label>ADL category:
+              <select name="adl_category" id="adl_category">
+                <option value="">Select category</option>
+                <option>Hygiene / Toileting</option>
+                <option>Dressing / Grooming</option>
+                <option>Cleaning / Household</option>
+                <option>Cooking / Food</option>
+                <option>Community / Errands</option>
+              </select>
+            </label>
+            <label>ADL activity:
+              <select name="adl_activity" id="adl_activity"><option value="">Select activity</option></select>
+            </label>
+          </div>
+          <div class="row cols-2">
+            <label>ADL note:<input type="text" name="adl_note" id="adl_note" placeholder="e.g., wiped table and brought dishes to sink"/></label>
+            <label>Prompting / independence:
+              <select name="prompting_level" id="prompting_level" data-scale="prompting"></select>
+            </label>
+          </div>
+          <p class="muted" style="margin:8px 0 4px">Add each ADL as you go so the log prints clearly.</p>
+          <button class="btn" type="button" id="addAdlEntry">+ Add ADL entry</button>
+          <ul class="adl-entry-list" id="adlEntryList"></ul>
+          <input type="hidden" name="adl_entries" id="adl_entries" value=""/>
+          <label>Daily living notes:<textarea name="daily_living_notes" id="daily_living_notes" placeholder="Cooking, cleaning, laundry, errands, etc."></textarea></label>
+          <div class="controls">
+            <div class="left-actions">
+              <button class="btn" type="button" data-save>Save</button>
+              <span class="savedAt" data-savedat></span>
+              <span class="savedAt" id="finalSubmittedAt"></span>
+            </div>
+            <div>
+              <button class="btn" type="button" data-prev>← Back</button>
+              <button class="btn primary" id="submitAll" type="submit">Submit Final</button>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </form>
+  </div>
+
+  <div id="toast"></div>
+
+
+<!-- App logic -->
+<script type="module">
+  // 1) Imports MUST be first in the module
+  import { rest, getSessionFromStorage } from './restClient.js?v=2025.01.09E';
+  import { loadFocusForCurrentUser, readLocalFocusDraft } from './focus-data.js?v=2025.01.09E';
+
+  // 2) Optional: expose for console debugging
+  window.rest = rest;
+
+  // 3) Simple load marker
+  console.log('[cg] script loaded v4');
+
+  // Define outer refs so other functions (e.g., submitFinal) can use them
+  let formEl, submitBtn;
+  let steps = [];
+  let toggleAllBtn, resumeDraftBtn;
+  let progItems = [];
+  let segs = [];
+  let entryDateInput;
+  const focusSummaryEl = document.getElementById('focusSummary');
+  const focusDetailsEl = document.getElementById('focusDetails');
+  const focusGoalsListEl = document.getElementById('focusGoalsList');
+  const focusTrackingListEl = document.getElementById('focusTrackingList');
+  const focusPanel = document.getElementById('caregiver-focus-panel');
+  const focusPlannerStatsEl = document.getElementById('focusPlannerStats');
+  let focusGoalMeta = [];
+  let plannerTrackerStats = null;
+      let adlStepIndex = -1;
+      let movementStepIndex = -1;
+  let adlCategory, adlActivity, adlNoteInput, adlPromptingSelect, adlEntryListEl, addAdlEntryBtn, adlEntriesField;
+  let adlEntries = [];
+  let adlHandlersBound = false;
+  const todayISO = () => new Date().toISOString().slice(0,10);
+
+  const PROMPT_SCALE = [
+    { value:"", label:"Select prompt level" },
+    { value:"0", label:"0 – Independent" },
+    { value:"1", label:"1 – 1–2 prompts" },
+    { value:"2", label:"2 – Periodic prompts" },
+    { value:"3", label:"3 – Frequent prompts" },
+    { value:"4", label:"4 – Dependent" }
+  ];
+  const PROMPT_LABELS = {
+    '0':'Independent',
+    '1':'1–2 prompts',
+    '2':'Periodic prompts',
+    '3':'Frequent prompts',
+    '4':'Dependent'
+  };
+
+  const DRAFT_KEY = 'cg-checkin-draft-v1';
+  const GROUP_KEY = 'currentGroupId';
+  const MOVEMENT_LAST_KEY = 'cg-movement-last-v1';
+
+  async function ensureGroupId(userId){
+    let groupId = null;
+    try {
+      groupId = typeof getCurrentGroupId === 'function' ? getCurrentGroupId() : null;
+    } catch { groupId = null; }
+
+    if (groupId) return groupId;
+    if (!userId) return null;
+
+    try {
+      const rows = await rest([
+        'group_members?select=group_id',
+        `user_id=eq.${encodeURIComponent(userId)}`,
+        'order=joined_at.asc',
+        'limit=1'
+      ].join('&'));
+      groupId = rows?.[0]?.group_id || null;
+      if (groupId) {
+        try { localStorage.setItem(GROUP_KEY, groupId); } catch {}
+      }
+    } catch (error) {
+      console.warn('ensureGroupId lookup failed', error);
+    }
+    return groupId;
+  }
+
+  const durationToMinutes = (value) => {
+    if (!value) return null;
+    const map = {
+      '0': 0,
+      '15–30 min': 30,
+      '30–60 min': 60,
+      '1–2 hrs': 120,
+      '2+ hrs': 150,
+    };
+    if (map[value] !== undefined) return map[value];
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  };
+
+  const trimOrNull = (value) => {
+    if (value == null) return null;
+    const trimmed = String(value).trim();
+    return trimmed ? trimmed : null;
+  };
+
+  const parseAdlEntries = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    try {
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const cleanGoalTitle = (raw) => {
+    if (!raw) return '';
+    const trimmed = String(raw).trim();
+    if (!trimmed) return '';
+    const lower = trimmed.toLowerCase();
+    if (lower === 'goal title') return '';
+    if (/^goal\s+\d+/.test(lower)) return '';
+    return trimmed;
+  };
+  const escapeHtml = (str = '') =>
+    String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+  const parseJsonArray = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    try {
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  function summarizePlannerDays(days = []){
+    if (!Array.isArray(days) || !days.length) return null;
+    const practiced = days.filter(day => day && (day.practiced || day.completed));
+    if (!practiced.length) return null;
+    const promptVals = practiced
+      .map(day => Number(day.promptLevel ?? day.prompt_level))
+      .filter(Number.isFinite);
+    const avgPrompt = promptVals.length
+      ? Number((promptVals.reduce((sum, val) => sum + val, 0) / promptVals.length).toFixed(1))
+      : null;
+    const last = practiced[practiced.length - 1] || {};
+    return {
+      count: practiced.length,
+      avgPrompt,
+      lastNote: last.note || last.notes || '',
+      lastDay: last.day || last.date || null,
+    };
+  }
+
+  function setPlannerStats(stats){
+    plannerTrackerStats = stats || null;
+    if (!focusPlannerStatsEl) return;
+    if (!stats?.count){
+      focusPlannerStatsEl.textContent = '';
+      focusPlannerStatsEl.classList.add('is-hidden');
+      return;
+    }
+    const pieces = [`${stats.count} practice day${stats.count === 1 ? '' : 's'} recorded in planner`];
+    if (stats.avgPrompt != null) pieces.push(`avg prompt level ${stats.avgPrompt}`);
+    if (stats.lastNote) pieces.push(`last note: ${stats.lastNote}`);
+    focusPlannerStatsEl.textContent = pieces.join(' • ');
+    focusPlannerStatsEl.classList.remove('is-hidden');
+  }
+
+  function buildFocusSummaryLine(focus, range, localFallback){
+    if (!focus) return '';
+    const parts = [];
+    const rawTitle = focus.customTitle || focus.title || '';
+    const cleanTitle = cleanGoalTitle(rawTitle) || 'Not set';
+    parts.push(`<strong>WEEKLY FOCUS TITLE:</strong> <span class="focus-title-text">${escapeHtml(cleanTitle)}</span>`);
+    if (focus.focusArea) parts.push(`<span class="focus-range">${escapeHtml(focus.focusArea)}</span>`);
+    const goalNames = (focus.goals || [])
+      .map((goal, index) => cleanGoalTitle(goal.title || goal.customTitle || `Goal ${index + 1}`))
+      .filter(Boolean);
+    if (goalNames.length){
+      const display = goalNames.slice(0, 2).join(', ');
+      const suffix = goalNames.length > 2 ? '…' : '';
+      parts.push(`<span class="focus-chip">${escapeHtml(display)}${suffix}</span>`);
+    }
+    if (range) parts.push(`<span class="focus-range">${escapeHtml(range)}</span>`);
+    if (localFallback) parts.push('<span class="focus-chip">Draft on this device</span>');
+    return parts.join('<span class="focus-dot">•</span>');
+  }
+
+  function buildFocusDetails(focus){
+    if (!focus) return '';
+    const bits = [];
+    if (focus.whyMatters) bits.push(escapeHtml(focus.whyMatters));
+    if (focus.nextSteps) bits.push(`Next: ${escapeHtml(focus.nextSteps)}`);
+    return bits.join(' • ');
+  }
+
+  function buildDemoFocus(){
+    return {
+      weekStart: '2026-01-26',
+      focusArea: 'Communication',
+      customTitle: 'Ask for help at the store',
+      whyMatters: 'Build confidence in requesting assistance in public settings.',
+      nextSteps: 'Use visual prompt card, then fade to verbal prompt.',
+      goals: [
+        { id:'g1', title:'Ask for help', promptGoal: 2, steps:['Practice greeting','Use help phrase','Thank staff'], notes:'Short, calm prompts' },
+        { id:'g2', title:'Wait in line calmly', promptGoal: 3, steps:['Stand in line','Hands to self','Deep breaths'], notes:'Use timer' },
+        { id:'g3', title:'Choose an item', promptGoal: 1, steps:['Pick item','Check price','Place in basket'], notes:'Reduce prompts' }
+      ],
+      days: [
+        { day:'Mon', practiced:true, promptLevel:3, note:'Used visual card' },
+        { day:'Tue', practiced:false, promptLevel:null, note:'' },
+        { day:'Wed', practiced:true, promptLevel:2, note:'Less prompting' },
+        { day:'Thu', practiced:true, promptLevel:2, note:'Short wait' },
+        { day:'Fri', practiced:true, promptLevel:1, note:'Independent ask' }
+      ]
+    };
+  }
+
+  async function loadFocusSummary(){
+    if (!focusSummaryEl) return;
+    try{
+      let focus = null;
+      let localFallback = false;
+      try {
+        const result = await loadFocusForCurrentUser();
+        focus = result?.focus || null;
+      } catch (err) {
+        console.warn('[cg] focus shared load failed', err);
+      }
+      if (!focus) {
+        focus = readLocalFocusDraft();
+        localFallback = !!focus;
+      }
+      if (!focus){
+        // DEMO fallback
+        focus = buildDemoFocus();
+        localFallback = true;
+      }
+      const start = focus.weekStart ? new Date(focus.weekStart) : null;
+      const end = start ? new Date(start) : null;
+      if (end) end.setDate(end.getDate() + 6);
+      const range = start && end ? `${start.toLocaleDateString()} – ${end.toLocaleDateString()}` : '';
+      focusGoalMeta = Array.isArray(focus.goals) ? focus.goals : [];
+      focusSummaryEl.innerHTML = buildFocusSummaryLine(focus, range, localFallback) || '<strong>WEEKLY FOCUS TITLE:</strong> Not set';
+      const details = buildFocusDetails(focus);
+      if (details){
+        focusDetailsEl.innerHTML = details;
+        focusDetailsEl.classList.remove('is-hidden');
+      } else {
+        focusDetailsEl.classList.add('is-hidden');
+      }
+      focusTrackingListEl && (focusTrackingListEl.style.display = '');
+      setPlannerStats(summarizePlannerDays(focus.days));
+      renderFocusGoals(focusGoalMeta);
+      renderFocusTrackingFields(focusGoalMeta);
+    } catch (error){
+      const fallback = readLocalFocusDraft();
+      if (fallback) {
+        focusGoalMeta = Array.isArray(fallback.goals) ? fallback.goals : [];
+        focusSummaryEl.innerHTML = buildFocusSummaryLine(fallback, null, true) || '<strong>WEEKLY FOCUS TITLE:</strong> Not set';
+        const details = buildFocusDetails(fallback);
+        if (details){
+          focusDetailsEl.innerHTML = details;
+          focusDetailsEl.classList.remove('is-hidden');
+        } else {
+          focusDetailsEl.classList.add('is-hidden');
+        }
+        focusTrackingListEl && (focusTrackingListEl.style.display = '');
+        setPlannerStats(summarizePlannerDays(fallback.days));
+        renderFocusGoals(focusGoalMeta);
+        renderFocusTrackingFields(focusGoalMeta);
+      } else {
+        focusSummaryEl.innerHTML = '<strong>WEEKLY FOCUS TITLE:</strong> Unable to load focus.';
+        focusDetailsEl?.classList.add('is-hidden');
+        setPlannerStats(null);
+      }
+      console.warn('[cg] focus summary load failed', error);
+    }
+  }
+
+  function renderFocusGoals(goals){
+    if (!focusGoalsListEl) return;
+    focusGoalsListEl.innerHTML = '';
+    const cleaned = Array.isArray(goals)
+      ? goals
+          .map((goal) => ({
+            title: cleanGoalTitle(goal.title || goal.customTitle || ''),
+            notes: trimOrNull(goal.notes),
+          }))
+          .filter((item) => item.title)
+      : [];
+    if (!cleaned.length){
+      const li = document.createElement('li');
+      li.textContent = 'Add weekly goals on the Focus page to see them here.';
+      focusGoalsListEl.appendChild(li);
+      return;
+    }
+    cleaned.forEach(({ title, notes }) => {
+      const li = document.createElement('li');
+      const strong = document.createElement('strong');
+      strong.textContent = title;
+      li.appendChild(strong);
+      if (notes){
+        const span = document.createElement('span');
+        span.textContent = notes;
+        li.appendChild(span);
+      }
+      focusGoalsListEl.appendChild(li);
+    });
+  }
+
+  function renderFocusTrackingFields(goals){
+    if (!focusTrackingListEl) return;
+    focusTrackingListEl.innerHTML = '';
+    if (!Array.isArray(goals) || !goals.length) {
+      focusTrackingListEl.style.display = 'none';
+      return;
+    }
+    focusTrackingListEl.style.display = '';
+    goals.forEach((goal, index) => {
+      const li = document.createElement('div');
+      li.className = 'focus-track-item';
+      const cleanTitle = cleanGoalTitle(goal.title || goal.customTitle || '') || '';
+      li.dataset.goalId = goal.id || goal.goal_id || cleanTitle || `goal-${index}`;
+      const targetLabel = goal.promptGoal ? (PROMPT_LABELS[goal.promptGoal] || goal.promptGoal) : '';
+      const titleFragment = cleanTitle ? ` (${escapeHtml(cleanTitle)})` : '';
+      const targetFragment = targetLabel
+        ? `<span class="focus-track-target">Target: ${escapeHtml(targetLabel)}</span>`
+        : '';
+      li.innerHTML = `
+        <div class="focus-track-header">
+          <label class="focus-track-practiced">
+            <input type="checkbox" data-focus-practiced>
+            <span>Practiced${titleFragment}</span>
+            ${targetFragment}
+          </label>
+          <div class="focus-track-prompt">
+            <select class="input input-chip" data-focus-prompt aria-label="Prompt level used">
+              ${PROMPT_SCALE.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <textarea data-focus-note placeholder="Notes from today…"></textarea>
+      `;
+      focusTrackingListEl.appendChild(li);
+    });
+  }
+
+  function collectFocusLogs(){
+    if (!focusTrackingListEl) return [];
+    return Array.from(focusTrackingListEl.querySelectorAll('.focus-track-item')).map(item => ({
+      goal_id: item.dataset.goalId || null,
+      goal_title: focusGoalMeta.find(g => g.id === item.dataset.goalId)?.title || item.dataset.goalId || '',
+      practiced: item.querySelector('[data-focus-practiced]')?.checked || false,
+      prompt_level: item.querySelector('[data-focus-prompt]')?.value || '',
+      note: item.querySelector('[data-focus-note]')?.value || ''
+    })).filter(entry => entry.practiced || entry.note || entry.prompt_level);
+  }
+
+  function clearFocusTrackingFields(){
+    if (!focusTrackingListEl) return;
+    focusTrackingListEl.querySelectorAll('.focus-track-item').forEach(item => {
+      const practiced = item.querySelector('[data-focus-practiced]');
+      const promptSel = item.querySelector('[data-focus-prompt]');
+      const note = item.querySelector('[data-focus-note]');
+      if (practiced) practiced.checked = false;
+      if (promptSel) promptSel.value = '';
+      if (note) note.value = '';
+    });
+  }
+
+  let movementEls = {};
+  let tempEls = {};
+  const getMovementCheckboxValues = (selector) =>
+    Array.from(document.querySelectorAll(selector))
+      .filter((el) => el.checked)
+      .map((el) => el.value);
+
+  const setMovementCheckboxValues = (selector, values = []) => {
+    const set = new Set(values || []);
+    document.querySelectorAll(selector).forEach((el) => {
+      el.checked = set.has(el.value);
+    });
+  };
+
+  const syncMovementHiddenField = (hiddenEl, values) => {
+    if (!hiddenEl) return;
+    hiddenEl.value = values.length ? JSON.stringify(values) : '';
+    hiddenEl.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  const setMovementSeverity = (value) => {
+    if (!movementEls.severityInput) return;
+    movementEls.severityInput.value = value ?? '';
+    movementEls.severityButtons?.forEach((btn) => {
+      const active = String(btn.dataset.sev) === String(value);
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    movementEls.severityInput.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  const syncMovementArrays = () => {
+    const times = getMovementCheckboxValues('[data-movement-time]');
+    const bodyMap = getMovementCheckboxValues('[data-movement-body]');
+    const triggers = getMovementCheckboxValues('[data-movement-trigger]');
+    syncMovementHiddenField(movementEls.timesInput, times);
+    syncMovementHiddenField(movementEls.bodyMapInput, bodyMap);
+    syncMovementHiddenField(movementEls.triggersInput, triggers);
+  };
+
+  const getTempCheckboxValues = (selector) =>
+    Array.from(document.querySelectorAll(selector))
+      .filter((el) => el.checked)
+      .map((el) => el.value);
+
+  const setTempCheckboxValues = (selector, values = []) => {
+    const set = new Set(values || []);
+    document.querySelectorAll(selector).forEach((el) => {
+      el.checked = set.has(el.value);
+    });
+  };
+
+  const syncTempHiddenField = (hiddenEl, values) => {
+    if (!hiddenEl) return;
+    hiddenEl.value = values.length ? JSON.stringify(values) : '';
+    hiddenEl.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  const syncTempArrays = () => {
+    const symptoms = getTempCheckboxValues('[data-temp-symptom]');
+    syncTempHiddenField(tempEls.symptomsInput, symptoms);
+  };
+
+  const setMovementPresent = (present) => {
+    if (!movementEls.bodyWrap) return;
+    movementEls.bodyWrap.classList.toggle('is-collapsed', !present);
+    if (!present) {
+      clearMovementFields({ keepPresent: true });
+      movementEls.detailsPanel?.classList.add('is-hidden');
+      movementEls.detailsToggle?.setAttribute('aria-expanded', 'false');
+      if (movementEls.detailsToggle) movementEls.detailsToggle.textContent = 'Show body map & triggers';
+    } else {
+      movementEls.detailsPanel?.classList.remove('is-hidden');
+      movementEls.detailsToggle?.setAttribute('aria-expanded', 'true');
+      if (movementEls.detailsToggle) movementEls.detailsToggle.textContent = 'Hide body map & triggers';
+      const times = parseJsonArray(movementEls.timesInput?.value);
+      if (!times.length) {
+        setMovementCheckboxValues('[data-movement-time]', ['AM']);
+        syncMovementArrays();
+      }
+    }
+  };
+
+  const setTempPresent = (present) => {
+    if (!tempEls.bodyWrap) return;
+    tempEls.bodyWrap.classList.toggle('is-collapsed', !present);
+    if (!present) {
+      clearTempFields({ keepPresent: true });
+    }
+  };
+
+  const clearMovementFields = ({ keepPresent = false } = {}) => {
+    if (!keepPresent) {
+      document.querySelectorAll('input[name="movement_present"]').forEach((el) => {
+        el.checked = el.value === 'no';
+      });
+    }
+    document.querySelectorAll('input[name="movement_main_type"]').forEach((el) => (el.checked = false));
+    setMovementSeverity('');
+    setMovementCheckboxValues('[data-movement-time]', []);
+    setMovementCheckboxValues('[data-movement-body]', []);
+    setMovementCheckboxValues('[data-movement-trigger]', []);
+    ['movement_notes','movement_other_text','movement_trigger_other','movement_interfered_notes','movement_safety_notes']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    ['movement_frequency','movement_interfered','movement_awareness','movement_safety_risk']
+      .forEach((name) => {
+        document.querySelectorAll(`input[name="${name}"]`).forEach((el) => (el.checked = false));
+      });
+    syncMovementArrays();
+  };
+
+  const clearTempFields = ({ keepPresent = false } = {}) => {
+    if (!keepPresent) {
+      document.querySelectorAll('input[name="temp_present"]').forEach((el) => {
+        el.checked = el.value === 'no';
+      });
+    }
+    ['temp_value', 'temp_method', 'temp_other_value', 'temp_symptom_other', 'temp_notes']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    setTempCheckboxValues('[data-temp-symptom]', []);
+    syncTempArrays();
+  };
+
+  const hydrateMovementFromData = (data = {}) => {
+    const present = String(data.movement_present || '').toLowerCase() === 'yes'
+      || data.movement_present === true;
+    document.querySelectorAll('input[name="movement_present"]').forEach((el) => {
+      el.checked = present ? el.value === 'yes' : el.value === 'no';
+    });
+    setMovementPresent(present);
+    if (!present) return;
+
+    document.querySelectorAll('input[name="movement_main_type"]').forEach((el) => {
+      el.checked = el.value === (data.movement_main_type || '');
+    });
+    setMovementSeverity(data.movement_severity ?? '');
+    const times = parseJsonArray(data.movement_times);
+    setMovementCheckboxValues('[data-movement-time]', times);
+    const bodyMap = parseJsonArray(data.movement_body_map);
+    setMovementCheckboxValues('[data-movement-body]', bodyMap);
+    const triggers = parseJsonArray(data.movement_triggers);
+    setMovementCheckboxValues('[data-movement-trigger]', triggers);
+    if (movementEls.timesInput) movementEls.timesInput.value = times.length ? JSON.stringify(times) : '';
+    if (movementEls.bodyMapInput) movementEls.bodyMapInput.value = bodyMap.length ? JSON.stringify(bodyMap) : '';
+    if (movementEls.triggersInput) movementEls.triggersInput.value = triggers.length ? JSON.stringify(triggers) : '';
+
+    const simpleFields = [
+      ['movement_notes', data.movement_notes],
+      ['movement_other_text', data.movement_other_text],
+      ['movement_trigger_other', data.movement_trigger_other],
+      ['movement_interfered_notes', data.movement_interfered_notes],
+      ['movement_safety_notes', data.movement_safety_notes],
+    ];
+    simpleFields.forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el && value != null) el.value = value;
+    });
+    ['movement_frequency','movement_interfered','movement_awareness','movement_safety_risk']
+      .forEach((name) => {
+        const val = data[name];
+        if (!val) return;
+        document.querySelectorAll(`input[name="${name}"]`).forEach((el) => {
+          el.checked = el.value === val;
+        });
+      });
+    syncMovementArrays();
+  };
+
+  const hydrateTempFromData = (data = {}) => {
+    const present = String(data.temp_present || '').toLowerCase() === 'yes'
+      || data.temp_present === true;
+    document.querySelectorAll('input[name="temp_present"]').forEach((el) => {
+      el.checked = present ? el.value === 'yes' : el.value === 'no';
+    });
+    setTempPresent(present);
+    if (!present) return;
+
+    const fields = [
+      ['temp_value', data.temp_value],
+      ['temp_method', data.temp_method],
+      ['temp_other_value', data.temp_other_value],
+      ['temp_symptom_other', data.temp_symptom_other],
+      ['temp_notes', data.temp_notes],
+    ];
+    fields.forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el && value != null) el.value = value;
+    });
+    const symptoms = parseJsonArray(data.temp_symptoms);
+    setTempCheckboxValues('[data-temp-symptom]', symptoms);
+    if (tempEls.symptomsInput) tempEls.symptomsInput.value = symptoms.length ? JSON.stringify(symptoms) : '';
+    syncTempArrays();
+  };
+
+  // 4) Start logic once DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    formEl        = document.getElementById('cg-form');
+    submitBtn     = document.getElementById('submitAll');
+    steps         = Array.from(document.querySelectorAll('.step'));
+      adlStepIndex  = steps.findIndex((step) => step.id === 'daily-living-step');
+      movementStepIndex = steps.findIndex((step) => step.dataset.step === '0');
+    entryDateInput = document.getElementById('entryDateInput');
+    toggleAllBtn  = document.getElementById('toggleAll');
+    resumeDraftBtn = document.getElementById('resumeDraftBtn');
+    const progressEl = document.getElementById('progress');
+    progItems     = progressEl ? Array.from(progressEl.querySelectorAll('.prog-item')) : [];
+    segs          = progressEl ? Array.from(progressEl.querySelectorAll('.seg')) : [];
+
+    if (!formEl || !submitBtn || steps.length === 0) {
+      console.error('❌ Form, button, or steps not found!');
+      return;
+    }
+
+    console.log('✅ Form assets ready:', { formEl, submitBtn, steps });
+
+    initAdlControls();
+    movementEls = {
+      bodyWrap: document.querySelector('[data-movement-body-wrap]'),
+      severityButtons: Array.from(document.querySelectorAll('[data-movement-severity] .movement-sev-btn')),
+      severityInput: document.getElementById('movement_severity'),
+      timesInput: document.getElementById('movement_times'),
+      bodyMapInput: document.getElementById('movement_body_map'),
+      triggersInput: document.getElementById('movement_triggers'),
+      detailsToggle: document.getElementById('movementDetailsToggle'),
+      detailsPanel: document.getElementById('movementDetails'),
+      sameBtn: document.getElementById('movementSameBtn')
+    };
+    tempEls = {
+      bodyWrap: document.querySelector('[data-temp-body-wrap]'),
+      symptomsInput: document.getElementById('temp_symptoms')
+    };
+    if (entryDateInput && !entryDateInput.value) {
+      entryDateInput.value = todayISO();
+    }
+    hydratePromptingSelects();
+    steps.forEach((step, idx) => restore(step, idx));
+    updateSavedButtons();
+    updateProgress();
+    syncAggressionControls();
+    loadFocusSummary();
+    syncMovementArrays();
+    syncTempArrays();
+    const movementCached = localStorage.getItem(MOVEMENT_LAST_KEY);
+    if (movementEls.sameBtn) {
+      movementEls.sameBtn.disabled = !movementCached;
+      if (!movementCached) movementEls.sameBtn.title = 'No previous movement log found on this device.';
+    }
+
+    // Wire per-step buttons and autosave
+    steps.forEach((step, idx) => {
+      step.querySelector('[data-next]')?.addEventListener('click', () => {
+        save(step, idx);
+        go(idx + 1);
+      });
+      step.querySelector('[data-prev]')?.addEventListener('click', () => {
+        save(step, idx, true);
+        go(idx - 1);
+      });
+      step.querySelector('[data-save]')?.addEventListener('click', () => save(step, idx));
+      let t;
+      step.addEventListener('input', (e) => {
+        if (e.target?.name === 'aggression_intensity') {
+          const el = document.getElementById('intensityVal');
+          if (el) el.textContent = e.target.value;
+        }
+        if (e.target?.name === 'manic_intensity') {
+          const el = document.getElementById('manicIntensityVal');
+          if (el) el.textContent = e.target.value;
+        }
+        clearTimeout(t);
+        t = setTimeout(() => save(step, idx, true), 450);
+      });
+    });
+
+    document.querySelectorAll('input[name="movement_present"]').forEach((el) => {
+      el.addEventListener('change', () => {
+        const present = el.value === 'yes';
+        setMovementPresent(present);
+        save(steps[movementStepIndex], movementStepIndex, true);
+      });
+    });
+    document.querySelectorAll('input[name="temp_present"]').forEach((el) => {
+      el.addEventListener('change', () => {
+        const present = el.value === 'yes';
+        setTempPresent(present);
+        save(steps[movementStepIndex], movementStepIndex, true);
+      });
+    });
+    movementEls.severityButtons?.forEach((btn) => {
+      btn.addEventListener('click', () => setMovementSeverity(btn.dataset.sev));
+    });
+    document.addEventListener('change', (event) => {
+      if (event.target?.matches('[data-movement-time],[data-movement-body],[data-movement-trigger]')) {
+        syncMovementArrays();
+      }
+      if (event.target?.matches('[data-temp-symptom]')) {
+        syncTempArrays();
+      }
+    });
+    movementEls.detailsToggle?.addEventListener('click', () => {
+      const isHidden = movementEls.detailsPanel?.classList.contains('is-hidden');
+      movementEls.detailsPanel?.classList.toggle('is-hidden', !isHidden);
+      movementEls.detailsToggle.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      movementEls.detailsToggle.textContent = isHidden
+        ? 'Hide body map & triggers'
+        : 'Show body map & triggers';
+    });
+    movementEls.sameBtn?.addEventListener('click', () => {
+      const raw = localStorage.getItem(MOVEMENT_LAST_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        hydrateMovementFromData(data || {});
+        movementEls.detailsPanel?.classList.remove('is-hidden');
+        movementEls.detailsToggle?.setAttribute('aria-expanded', 'true');
+        if (movementEls.detailsToggle) movementEls.detailsToggle.textContent = 'Hide body map & triggers';
+        if (movementStepIndex >= 0) save(steps[movementStepIndex], movementStepIndex, true);
+      } catch (error) {
+        console.warn('movement copy failed', error);
+      }
+    });
+
+    // Progress nav + show all
+    progItems.forEach((pi) => pi.addEventListener('click', () => go(Number(pi.dataset.step))));
+    toggleAllBtn?.addEventListener('click', () => {
+      showAll = !showAll;
+      if (showAll) {
+        steps.forEach((s) => s.classList.add('active'));
+        toggleAllBtn.textContent = 'Collapse to wizard';
+      } else {
+        steps.forEach((s, i) => s.classList.toggle('active', i === current));
+        toggleAllBtn.textContent = 'Show all sections';
+        steps[current].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // Draft resume
+    resumeDraftBtn?.addEventListener('click', () => {
+      draft = loadDraft() || { data: {}, savedAt: {} };
+      steps.forEach((s, i) => restore(s, i));
+      hydratePromptingSelects();
+      syncAggressionControls();
+      hydrateMovementFromData(draft.data[movementStepIndex] || {});
+      hydrateTempFromData(draft.data[movementStepIndex] || {});
+      applyConditionalSections();
+      toast('Draft restored');
+    });
+
+    // Final submit handlers
+    submitBtn.addEventListener('click', submitFinal);
+    formEl.addEventListener('submit', submitFinal);
+
+    // Initial position
+    go(0);
+    applyConditionalSections();
+
+    ['behavior_anomaly_flag','vocational_participation','home_activity_flag','public_activity_flag','community_interaction_ok']
+      .forEach((id) => {
+        const sel = document.getElementById(id);
+        sel?.addEventListener('change', () => {
+          applyConditionalSections();
+        });
+      });
+    document.addEventListener('change', (event) => {
+      if (event.target?.matches('input[name="prn_given"],input[name="prn_aggression_given"],input[name="prn_mania_given"],input[name="night_wake_flag"]')) {
+        applyConditionalSections();
+      }
+    });
+  }); // <-- end DOMContentLoaded
+
+  // Helper: normalize truthy/falsey
+  const toBool = (v) => {
+    if (v == null) return null;
+    const s = String(v).trim().toLowerCase();
+    return ['true','yes','y','1','on'].includes(s)
+      ? true
+      : ['false','no','n','0','off',''].includes(s)
+      ? false
+      : null;
+  };
+
+
+
+ 
+    // Prompting scale (shared with planner)
+    function populatePromptingSelect(sel){
+      const prev = sel.value;
+      sel.innerHTML = PROMPT_SCALE.map(o=>`<option value="${o.value}">${o.label}</option>`).join('');
+      if (prev) sel.value = prev;
+    }
+    function hydratePromptingSelects(){
+      document.querySelectorAll('select[data-scale="prompting"]').forEach(populatePromptingSelect);
+    }
+
+    // Aggression enable/disable
+    const flag = document.getElementById('aggression_flag');
+    const aType = document.getElementById('aggression_type');
+    const aInt  = document.getElementById('aggression_intensity');
+    const aggressionDetails = document.getElementById('aggressionDetails');
+    const aggressionNotesWrap = document.getElementById('aggressionNotesWrap');
+    function syncAggressionControls(){
+      const yes = flag?.value === 'Yes';
+      [aType,aInt].forEach(el=>el && (el.disabled=!yes));
+      if(!yes){ if(aType) aType.value=''; if(aInt){ aInt.value=0; const iv=document.getElementById('intensityVal'); if(iv) iv.textContent='0'; } }
+      if (aggressionDetails) aggressionDetails.style.display = yes ? '' : 'none';
+      if (aggressionNotesWrap) aggressionNotesWrap.style.display = yes ? '' : 'none';
+      const prnRow = document.getElementById('aggressionPrnRow');
+      if (prnRow) prnRow.style.display = yes ? '' : 'none';
+      if (!yes) {
+        document.querySelectorAll('input[name="prn_aggression_given"]').forEach((el) => (el.checked = false));
+        const name = document.querySelector('input[name="prn_aggression_name"]');
+        const time = document.querySelector('input[name="prn_aggression_time"]');
+        if (name) name.value = '';
+        if (time) time.value = '';
+      }
+    }
+    flag?.addEventListener('change', syncAggressionControls);
+
+    // Mania enable/disable
+    const manicFlag = document.getElementById('manic_flag');
+    const manicInt  = document.getElementById('manic_intensity');
+    const appetiteFlag = document.getElementById('appetite_change_flag');
+    const appetiteNotesWrap = document.getElementById('appetiteNotesWrap');
+    function syncManiaControls(){
+      const yes = manicFlag?.value === 'Yes';
+      if (manicInt) manicInt.disabled = !yes;
+      if (!yes && manicInt) {
+        manicInt.value = 0;
+        const iv = document.getElementById('manicIntensityVal');
+        if (iv) iv.textContent = '0';
+      }
+    }
+    function syncAppetiteControls(){
+      const yes = appetiteFlag?.value === 'Yes';
+      if (appetiteNotesWrap) appetiteNotesWrap.style.display = yes ? '' : 'none';
+      if (!yes) {
+        const input = appetiteNotesWrap?.querySelector('input');
+        if (input) input.value = '';
+      }
+    }
+    manicFlag?.addEventListener('change', syncManiaControls);
+    appetiteFlag?.addEventListener('change', syncAppetiteControls);
+
+    const toggleFieldGroup = (selectId, { showWhen = 'Yes', targets = [] } = {}) => {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const isMatch = sel.value === showWhen;
+      targets.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = isMatch ? '' : 'none';
+      });
+    };
+    const applyConditionalSections = () => {
+      toggleFieldGroup('behavior_anomaly_flag', {
+        showWhen: 'Yes',
+        targets: ['anomalyTriggerWrap', 'anomalyNotesWrap']
+      });
+      toggleFieldGroup('appetite_change_flag', {
+        showWhen: 'Yes',
+        targets: ['appetiteNotesWrap']
+      });
+      toggleFieldGroup('vocational_participation', {
+        showWhen: 'Yes',
+        targets: ['vocationalDetails', 'vocationalNotesWrap']
+      });
+      toggleFieldGroup('home_activity_flag', {
+        showWhen: 'Yes',
+        targets: ['homeDetails', 'homeDetailsNotes', 'homeNotesWrap']
+      });
+      toggleFieldGroup('public_activity_flag', {
+        showWhen: 'Yes',
+        targets: ['publicDetails', 'publicDetailsNotes']
+      });
+      toggleFieldGroup('community_interaction_ok', {
+        showWhen: 'Yes',
+        targets: ['interactionDetails', 'interactionDetailsNotes']
+      });
+      const publicYes = document.getElementById('public_activity_flag')?.value === 'Yes';
+      const interactionYes = document.getElementById('community_interaction_ok')?.value === 'Yes';
+      const communityNotesWrap = document.getElementById('communityNotesWrap');
+      if (communityNotesWrap) communityNotesWrap.style.display = (publicYes || interactionYes) ? '' : 'none';
+      syncManiaControls();
+      syncAppetiteControls();
+      const nightWakeFlagYes = document.getElementById('night_wake_flag_yes');
+      const nightWrap = document.getElementById('nightWakeCountWrap');
+      const nightCount = document.getElementById('night_wake_count');
+      const nightChecked = !!nightWakeFlagYes?.checked;
+      if (nightWrap) nightWrap.style.display = nightChecked ? '' : 'none';
+      if (!nightChecked && nightCount) nightCount.value = '';
+
+      const prnYes = document.getElementById('prn_given_yes');
+      const prnWrap = document.getElementById('prnNameWrap');
+      const prnInput = prnWrap?.querySelector('input');
+      const prnChecked = !!prnYes?.checked;
+      if (prnWrap) prnWrap.style.display = prnChecked ? '' : 'none';
+      if (!prnChecked && prnInput) prnInput.value = '';
+
+      const prnAggYes = document.getElementById('prn_aggression_given_yes');
+      const prnAggNameWrap = document.getElementById('prnAggressionNameWrap');
+      const prnAggTimeWrap = document.getElementById('prnAggressionTimeWrap');
+      const prnAggChecked = !!prnAggYes?.checked;
+      if (prnAggNameWrap) prnAggNameWrap.style.display = prnAggChecked ? '' : 'none';
+      if (prnAggTimeWrap) prnAggTimeWrap.style.display = prnAggChecked ? '' : 'none';
+      if (!prnAggChecked) {
+        const n = prnAggNameWrap?.querySelector('input');
+        const t = prnAggTimeWrap?.querySelector('input');
+        if (n) n.value = '';
+        if (t) t.value = '';
+      }
+
+      const prnManiaYes = document.getElementById('prn_mania_given_yes');
+      const prnManiaNameWrap = document.getElementById('prnManiaNameWrap');
+      const prnManiaTimeWrap = document.getElementById('prnManiaTimeWrap');
+      const prnManiaChecked = !!prnManiaYes?.checked;
+      if (prnManiaNameWrap) prnManiaNameWrap.style.display = prnManiaChecked ? '' : 'none';
+      if (prnManiaTimeWrap) prnManiaTimeWrap.style.display = prnManiaChecked ? '' : 'none';
+      if (!prnManiaChecked) {
+        const n = prnManiaNameWrap?.querySelector('input');
+        const t = prnManiaTimeWrap?.querySelector('input');
+        if (n) n.value = '';
+        if (t) t.value = '';
+      }
+    };
+
+    // ADL activity options
+    const ADL_OPTIONS = {
+      'Hygiene / Toileting': ['Brushed teeth','Flossed teeth','Washed face','Showered','Toileting routine','Combed hair','Clipped nails'],
+      'Dressing / Grooming': ['Chose clothes','Dressed self','Zipped / Buttoned','Tied shoes','Wore hat/sunglasses/jacket'],
+      'Cleaning / Household': ['Wiped table','Brought dishes to sink','Loaded dishwasher','Swept/Vacuumed','Made bed','Laundry assist'],
+      'Cooking / Food': ['Prepared snack','Prepared drink','Made sandwich','Helped cook','Used microwave','Helped bake'],
+      'Community / Errands': ['Brought trash out','Sorted recycling','Carried grocery bag']
+    };
+    function setAdlActivities(cat){
+      if (!adlActivity) return;
+      const list = ADL_OPTIONS[cat] || [];
+      adlActivity.innerHTML = '<option value="">Select activity</option>' + list.map(x=>`<option>${x}</option>`).join('');
+    }
+
+    function renderAdlEntries(){
+      if (!adlEntryListEl) return;
+      adlEntryListEl.innerHTML = '';
+      if (!adlEntries.length){
+        const li = document.createElement('li');
+        li.className = 'muted';
+        li.textContent = 'No ADL entries added yet.';
+        adlEntryListEl.appendChild(li);
+        return;
+      }
+      adlEntries.forEach((entry, idx) => {
+        const li = document.createElement('li');
+        li.className = 'adl-entry';
+
+        const info = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = entry.category || 'ADL';
+        info.appendChild(title);
+        if (entry.activity){
+          const act = document.createElement('small');
+          act.textContent = entry.activity;
+          info.appendChild(act);
+        }
+        if (entry.note){
+          const note = document.createElement('small');
+          note.textContent = entry.note;
+          info.appendChild(note);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'adl-entry-actions';
+        if (entry.prompting){
+          const prompt = document.createElement('small');
+          prompt.textContent = `Prompt: ${PROMPT_LABELS[entry.prompting] || entry.prompting}`;
+          actions.appendChild(prompt);
+        }
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn';
+        removeBtn.dataset.removeAdl = idx;
+        removeBtn.textContent = 'Remove';
+        actions.appendChild(removeBtn);
+
+        li.appendChild(info);
+        li.appendChild(actions);
+        adlEntryListEl.appendChild(li);
+      });
+    }
+
+    function syncAdlEntriesField({ silent } = {}){
+      if (adlEntriesField){
+        adlEntriesField.value = adlEntries.length ? JSON.stringify(adlEntries) : '';
+        if (!silent){
+          adlEntriesField.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+      renderAdlEntries();
+    }
+
+    function resetAdlEntries(){
+      adlEntries = [];
+      syncAdlEntriesField({ silent: true });
+    }
+
+    function hydrateAdlFieldsFromData(stepData, { silent } = {}){
+      if (stepData?.adl_category){
+        setAdlActivities(stepData.adl_category);
+        if (adlActivity) adlActivity.value = stepData.adl_activity || '';
+      } else {
+        setAdlActivities('');
+        if (adlActivity) adlActivity.value = '';
+      }
+      adlEntries = parseAdlEntries(stepData?.adl_entries);
+      syncAdlEntriesField({ silent: true });
+    }
+
+    function addAdlEntry(){
+      const category = adlCategory?.value || '';
+      const activity = adlActivity?.value || '';
+      const note = (adlNoteInput?.value || '').trim();
+      const prompting = adlPromptingSelect?.value || '';
+      if (!category){
+        alert('Select an ADL category before adding an entry.');
+        return;
+      }
+      adlEntries.push({
+        category,
+        activity,
+        note,
+        prompting
+      });
+      syncAdlEntriesField();
+      if (adlActivity) adlActivity.value = '';
+      if (adlNoteInput) adlNoteInput.value = '';
+    }
+
+    function handleAdlRemoval(event){
+      const target = event.target.closest('[data-remove-adl]');
+      if (!target) return;
+      const idx = Number(target.dataset.removeAdl);
+      if (!Number.isFinite(idx)) return;
+      adlEntries.splice(idx, 1);
+      syncAdlEntriesField();
+    }
+
+    function initAdlControls(){
+      adlCategory = document.getElementById('adl_category');
+      adlActivity = document.getElementById('adl_activity');
+      adlNoteInput = document.getElementById('adl_note');
+      adlPromptingSelect = document.getElementById('prompting_level');
+      adlEntryListEl = document.getElementById('adlEntryList');
+      addAdlEntryBtn = document.getElementById('addAdlEntry');
+      adlEntriesField = document.getElementById('adl_entries');
+      if (!adlHandlersBound){
+        adlCategory?.addEventListener('change', e=> setAdlActivities(e.target.value));
+        addAdlEntryBtn?.addEventListener('click', addAdlEntry);
+        adlEntryListEl?.addEventListener('click', handleAdlRemoval);
+        adlHandlersBound = true;
+      }
+      setAdlActivities(adlCategory?.value || '');
+      if (!adlEntries.length) resetAdlEntries();
+      else renderAdlEntries();
+    }
+
+  // Wizard state
+  let showAll = false;
+  let current = 0;
+  let draft = loadDraft() || { data: {}, savedAt: {} };
+
+    // ---------- helpers ----------
+    function serialize(step){
+      const data={};
+      step.querySelectorAll('input,select,textarea').forEach(el=>{
+        if(!el.name) return;
+        if(el.type==='checkbox') data[el.name]=!!el.checked;
+        else if(el.type==='radio'){ if(el.checked) data[el.name]=el.value; }
+        else data[el.name]=el.value;
+      });
+      return data;
+    }
+    function hydrate(step,data){
+      if(!data) return;
+      step.querySelectorAll('input,select,textarea').forEach(el=>{
+        const v = data[el.name]; if(v===undefined) return;
+        if(el.type==='checkbox') el.checked = !!v;
+        else if(el.type==='radio') el.checked = (el.value===v);
+        else el.value = v;
+      });
+    }
+    function save(step,idx,silent){
+      draft.data[idx]=serialize(step);
+      draft.savedAt[idx]=new Date().toISOString();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      updateSavedAt(step,idx);
+      updateSavedButtons();
+      if(!silent) toast('Saved');
+    }
+    function restore(step,idx){
+      hydrate(step,draft.data[idx]);
+      updateSavedAt(step,idx);
+      if(idx===adlStepIndex){
+        hydrateAdlFieldsFromData(draft.data[idx] || {}, { silent: true });
+      }
+      if (idx === movementStepIndex) {
+        hydrateMovementFromData(draft.data[idx] || {});
+        hydrateTempFromData(draft.data[idx] || {});
+      }
+    }
+    function loadDraft(){ try{ const raw=localStorage.getItem(DRAFT_KEY); return raw?JSON.parse(raw):null; }catch{ return null; } }
+    function updateSavedAt(step,idx){
+      const el=step.querySelector('[data-savedat]'); const ts=draft.savedAt[idx];
+      if(el) el.textContent = ts ? `Last saved: ${new Date(ts).toLocaleString()}` : '';
+    }
+    function updateSavedButtons(){
+      const hasDraft = !!localStorage.getItem(DRAFT_KEY);
+      if (resumeDraftBtn){ resumeDraftBtn.style.display = hasDraft ? '' : 'none'; resumeDraftBtn.disabled = !hasDraft; }
+    }
+    function updateProgress(){
+      segs.forEach((seg,idx)=>{
+        seg.classList.toggle('active', idx===current);
+        const hasData = !!draft.data[idx] && Object.values(draft.data[idx]).some(v=>v!=='' && v!==false && v!==null && v!==undefined);
+        seg.classList.toggle('done', hasData && idx<current);
+      });
+    }
+    function go(i){
+      current = Math.max(0, Math.min(i, steps.length-1));
+      if(!showAll){ steps.forEach((s,idx)=>s.classList.toggle('active', idx===current)); steps[current].scrollIntoView({behavior:'smooth',block:'start'}); }
+      updateProgress();
+    }
+    function buildPayload(){
+      const payload={};
+      steps.forEach((s,idx)=>Object.assign(payload, draft.data[idx]||{}));
+      payload._saved_at = draft.savedAt;
+      payload._submitted_at = new Date().toISOString();
+      return payload;
+    }
+    function resetFormValues(){
+      formEl.reset();
+      if (entryDateInput) entryDateInput.value = todayISO();
+      const iv=document.getElementById('intensityVal');
+      if(iv) iv.textContent='0';
+      resetAdlEntries();
+      setAdlActivities('');
+      hydratePromptingSelects();
+      clearFocusTrackingFields();
+      clearMovementFields();
+      movementEls.detailsPanel?.classList.add('is-hidden');
+      movementEls.detailsToggle?.setAttribute('aria-expanded', 'false');
+      clearTempFields();
+      tempEls.bodyWrap?.classList.add('is-collapsed');
+    }
+    function clearDraftUI(){
+      draft={ data:{}, savedAt:{} };
+      localStorage.removeItem(DRAFT_KEY);
+      steps.forEach((s,i)=>updateSavedAt(s,i));
+      updateSavedButtons();
+      resetAdlEntries();
+      clearMovementFields();
+      clearTempFields();
+    }
+    function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.style.opacity='1'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.opacity='0',1400); }
+
+    // ---------- FINAL SUBMIT ----------
+    async function submitFinal(e){
+      e?.preventDefault?.();
+      if (submitBtn) { submitBtn.disabled=true; submitBtn.textContent='Submitting…'; }
+      try {
+        const activeStep = steps[current];
+        if (activeStep) {
+          save(activeStep, current, true);
+        }
+
+        const session = getSessionFromStorage();
+        const user = session?.user || null;
+        const user_id = user?.id;
+        if (!user_id) throw new Error('Not signed in');
+
+        const payload = buildPayload();
+        const entryDateRaw = payload.entry_date || entryDateInput?.value || '';
+        const entryDate = /^\d{4}-\d{2}-\d{2}$/.test(entryDateRaw)
+          ? entryDateRaw
+          : todayISO();
+        payload.entry_date = entryDate;
+        const normalizeMovement = () => {
+          const presentRaw = String(payload.movement_present || '').toLowerCase();
+          const movementPresent = presentRaw === 'yes' || presentRaw === 'true';
+          const severityVal = Number(payload.movement_severity);
+          const times = parseJsonArray(payload.movement_times);
+          const bodyMap = parseJsonArray(payload.movement_body_map);
+          const triggers = parseJsonArray(payload.movement_triggers);
+          const cleaned = {
+            movement_present: movementPresent,
+            movement_main_type: trimOrNull(payload.movement_main_type),
+            movement_severity: Number.isFinite(severityVal) ? severityVal : null,
+            movement_times: times,
+            movement_notes: trimOrNull(payload.movement_notes),
+            movement_body_map: bodyMap,
+            movement_other_text: trimOrNull(payload.movement_other_text),
+            movement_frequency: trimOrNull(payload.movement_frequency),
+            movement_triggers: triggers,
+            movement_trigger_other: trimOrNull(payload.movement_trigger_other),
+            movement_interfered: trimOrNull(payload.movement_interfered),
+            movement_interfered_notes: trimOrNull(payload.movement_interfered_notes),
+            movement_awareness: trimOrNull(payload.movement_awareness),
+            movement_safety_risk: trimOrNull(payload.movement_safety_risk),
+            movement_safety_notes: trimOrNull(payload.movement_safety_notes),
+          };
+          if (!movementPresent) {
+            Object.keys(cleaned).forEach((key) => {
+              if (key === 'movement_present') return;
+              cleaned[key] = Array.isArray(cleaned[key]) ? [] : null;
+            });
+          }
+          Object.assign(payload, cleaned);
+          return cleaned;
+        };
+        const movementData = normalizeMovement();
+        const normalizeTemp = () => {
+          const presentRaw = String(payload.temp_present || '').toLowerCase();
+          const tempPresent = presentRaw === 'yes' || presentRaw === 'true';
+          const symptoms = parseJsonArray(payload.temp_symptoms);
+          const cleaned = {
+            temp_present: tempPresent,
+            temp_value: trimOrNull(payload.temp_value),
+            temp_method: trimOrNull(payload.temp_method),
+            temp_other_value: trimOrNull(payload.temp_other_value),
+            temp_symptoms: symptoms,
+            temp_symptom_other: trimOrNull(payload.temp_symptom_other),
+            temp_notes: trimOrNull(payload.temp_notes),
+          };
+          if (!tempPresent) {
+            Object.keys(cleaned).forEach((key) => {
+              if (key === 'temp_present') return;
+              cleaned[key] = Array.isArray(cleaned[key]) ? [] : null;
+            });
+          }
+          Object.assign(payload, cleaned);
+          return cleaned;
+        };
+        normalizeTemp();
+        const adlEntriesFromPayload = parseAdlEntries(payload.adl_entries);
+        payload.adl_entries = adlEntriesFromPayload;
+        const had_bm =
+          payload.had_bm === true ||
+          /yes/i.test(String(payload.had_bm ?? payload.bm_today ?? ''));
+
+        const group_id = await ensureGroupId(user_id);
+        const caregiverName = trimOrNull(payload.caregiver_name) ||
+          trimOrNull(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email);
+
+        const adlCategorySet = new Set();
+        adlEntriesFromPayload.forEach(entry => {
+          if (entry?.category) adlCategorySet.add(entry.category);
+        });
+        if (!adlCategorySet.size && payload.adl_category) {
+          adlCategorySet.add(payload.adl_category);
+        }
+        const hygiene = adlCategorySet.has('Hygiene / Toileting');
+        const foodPrep = adlCategorySet.has('Cooking / Food');
+        const cleanup = adlCategorySet.has('Cleaning / Household');
+
+        const vocationalMinutes = durationToMinutes(payload.vocational_time);
+        const homeMinutes = durationToMinutes(payload.home_activity_time);
+        const publicMinutes = durationToMinutes(payload.public_activity_time);
+        const communityMinutes = [homeMinutes, publicMinutes]
+          .filter((n) => Number.isFinite(n))
+          .reduce((sum, n) => sum + n, 0);
+        const community_time = Number.isFinite(communityMinutes) && communityMinutes > 0 ? communityMinutes : null;
+
+        const newSkillScore = Number.isFinite(Number(payload.prompting_level))
+          ? Number(payload.prompting_level)
+          : null;
+
+        const caregiverNotes = [
+          payload.physical_notes,
+          payload.behavior_notes,
+          payload.vocational_notes,
+          payload.home_notes,
+          payload.community_notes,
+          payload.daily_living_notes,
+        ]
+          .map((note) => trimOrNull(note))
+          .filter(Boolean)
+          .join('\n\n') || null;
+
+        const focusLogs = collectFocusLogs();
+        payload.focus_goal_logs = focusLogs;
+        try {
+          localStorage.setItem(MOVEMENT_LAST_KEY, JSON.stringify(movementData));
+        } catch {}
+
+        const row = {
+          user_id,
+          group_id,
+          caregiver_name: caregiverName,
+          date: entryDate,
+          had_bm,
+          hygiene,
+          food_prep: foodPrep,
+          cleanup,
+          vocational_time: Number.isFinite(vocationalMinutes) ? vocationalMinutes : null,
+          community_time,
+          new_skill_score: newSkillScore,
+          caregiver_notes: caregiverNotes,
+          payload,
+          adl_entries: adlEntriesFromPayload,
+          submitted_at: new Date().toISOString(),
+          movement_present: movementData.movement_present,
+          movement_main_type: movementData.movement_main_type,
+          movement_severity: movementData.movement_severity,
+          movement_times: movementData.movement_times,
+          movement_notes: movementData.movement_notes,
+          movement_body_map: movementData.movement_body_map,
+          movement_frequency: movementData.movement_frequency,
+          movement_triggers: movementData.movement_triggers,
+          movement_other_text: movementData.movement_other_text,
+          movement_trigger_other: movementData.movement_trigger_other,
+          movement_interfered: movementData.movement_interfered,
+          movement_interfered_notes: movementData.movement_interfered_notes,
+          movement_awareness: movementData.movement_awareness,
+          movement_safety_risk: movementData.movement_safety_risk,
+          movement_safety_notes: movementData.movement_safety_notes
+        };
+
+        let inserted = null;
+        try {
+          inserted = await rest('caregiver_checkins', {
+            method: 'POST',
+            headers: { Prefer: 'return=representation' },
+            body: JSON.stringify([row]),
+          });
+        } catch (error) {
+          const msg = String(error?.message || '');
+          if (/column .*movement_|schema cache/i.test(msg)) {
+            const {
+              movement_present,
+              movement_main_type,
+              movement_severity,
+              movement_times,
+              movement_notes,
+              movement_body_map,
+              movement_frequency,
+              movement_triggers,
+              movement_other_text,
+              movement_trigger_other,
+              movement_interfered,
+              movement_interfered_notes,
+              movement_awareness,
+              movement_safety_risk,
+              movement_safety_notes,
+              ...fallbackRow
+            } = row;
+            inserted = await rest('caregiver_checkins', {
+              method: 'POST',
+              headers: { Prefer: 'return=representation' },
+              body: JSON.stringify([fallbackRow]),
+            });
+          } else {
+            throw error;
+          }
+        }
+        const data = Array.isArray(inserted) ? inserted[0] : inserted;
+
+        const when = new Date(data?.submitted_at || row.submitted_at).toLocaleString();
+        const slot = document.getElementById('finalSubmittedAt');
+        if (slot) slot.textContent = `SUBMITTED: ${when}`;
+
+        clearDraftUI();
+        resetFormValues();
+        toast('Submitted ✓');
+      } catch (err) {
+        console.error('[cg] submit error:', err);
+        alert('Could not submit. ' + (err?.message || 'Check your connection and try again.'));
+      } finally {
+        if (submitBtn) { submitBtn.disabled=false; submitBtn.textContent='Submit Final'; }
+      }
+    }
+</script>
+<script>
+  (function(){
+    const version = window.STAR_BUILD_VERSION || '2025.01.09E';
+    if (!window.STAR_BUILD_VERSION) window.STAR_BUILD_VERSION = version;
+    const ensureBadge = () => {
+      if (document.getElementById('star-build-version')) return;
+      const badge = document.createElement('div');
+      badge.id = 'star-build-version';
+      badge.textContent = `Build ${version}`;
+      badge.style.cssText = `
+        position:fixed;
+        right:12px;
+        bottom:12px;
+        background:rgba(17,17,17,0.85);
+        color:#f9fafb;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:0.02em;
+        padding:6px 10px;
+        border-radius:10px;
+        box-shadow:0 6px 18px rgba(0,0,0,0.18);
+        z-index:998;
+        pointer-events:none;
+      `;
+      document.body.appendChild(badge);
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', ensureBadge, { once: true });
+    } else {
+      ensureBadge();
+    }
+  })();
+</script>
+<div id="tabbar"></div>
+<!-- Bottom tab bar + hamburger drawer -->
+<script defer src="./load-tabbar.js?v=2025.01.09E"></script>
+<script defer src="./ui-shell.js?v=2025.01.09E"></script>
+<script defer src="./scripts/appbar-drawer.js?v=2025.01.09E"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documents</title>
+  <style>
+    :root{ --ink:#1f2937; --accent:#f59e0b; --paper:#fffdfa; --rule:#e5e7eb; --punch:#d1d5db; }
+    *{box-sizing:border-box}
+    body{margin:0; padding:24px; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#fafaf9; color:var(--ink);}
+    .page{max-width:1200px; margin:0 auto;}
+
+    /* Notebook */
+    .notebook{position:relative; border-radius:18px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08); display:grid; grid-template-columns:1fr 110px; background:var(--paper)}
+    .paper{
+      padding:24px 24px 28px 42px; position:relative;
+      background:
+        linear-gradient(90deg,transparent 38px, rgba(239,68,68,.25) 39px, transparent 40px) 0 0/100% 100%,
+        repeating-linear-gradient(#0000, #0000 30px, var(--rule) 31px);
+    }
+    .paper:before{content:""; position:absolute; left:14px; top:24px; bottom:24px; width:8px;
+      background:radial-gradient(var(--punch) 60%, transparent 62%) 0 0/100% 48px repeat-y; border-radius:8px;}
+    .rail{display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#fff,#f8fafc); border-left:1px solid #e5e7eb}
+    .pencil{width:56px; height:320px; filter:drop-shadow(0 8px 18px rgba(0,0,0,.15))}
+    h1{margin:0 0 12px}
+    label{display:block; font-weight:600; margin:6px 0 6px}
+    input[type="text"], input[type="datetime-local"], select, textarea{
+      width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; font-size:16px; background:#fff; outline:none;
+    }
+    textarea{min-height:140px; line-height:30px;
+      background:linear-gradient(#0000, #0000 29px, rgba(37,99,235,.08) 30px) 0 0/100% 30px repeat-y;
+    }
+    .grid2{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+    .divider{height:1px; background:#f1f5f9; margin:16px 0}
+    .btn{appearance:none; border:1px solid #e5e7eb; background:#111; color:#fff; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600}
+    .btn.secondary{background:#fff; color:#111}
+    .muted{color:#6b7280; font-size:13px}
+    .card{border:1px solid #e5e7eb; border-radius:12px; padding:12px; margin-top:10px; background:#fff}
+    .row{display:flex; gap:8px; align-items:center; justify-content:space-between}
+    .doc-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:22px}
+    .doc-header h2{margin:0}
+    .doc-attachment-preview{
+      margin-top:10px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#f8fafc;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      cursor:pointer;
+      width:100%;
+      text-align:left;
+    }
+    .doc-attachment-preview img{
+      width:100%;
+      max-height:240px;
+      object-fit:contain;
+      border-radius:10px;
+      background:#fff;
+    }
+    .doc-attachment-preview .preview-label{
+      font-size:12px;
+      font-weight:700;
+      color:#64748b;
+    }
+    .doc-attachment-preview .preview-status{
+      font-size:12px;
+      color:#94a3b8;
+    }
+    .doc-attachment-preview.has-image .preview-status{ display:none; }
+
+    /* Right-edge quick nav bubbles */
+    .edge-tabs {
+      position: fixed;
+      right: 12px;
+      top: 88px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1050;
+    }
+    .edge-tabs a {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      background: #111;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.22);
+      opacity: .92;
+      transition: transform .08s ease, opacity .08s ease;
+      font-size: 20px;
+    }
+    .edge-tabs a:hover { transform: translateY(-1px); opacity: 1; }
+    .edge-tabs a[aria-current="page"] {
+      outline: 3px solid #ffd166;
+      outline-offset: 2px;
+      background: #1b1b1b;
+    }
+    @media (max-width: 680px) {
+      .edge-tabs {
+        top: auto;
+        bottom: calc(var(--tabbar-h,72px) + 12px);
+        right: 10px;
+        flex-direction: row;
+      }
+      .edge-tabs a{width:36px;height:36px;font-size:16px;border-radius:10px}
+    }
+    @media print { .edge-tabs { display: none !important; } }
+
+    @media (max-width: 720px) {
+      body{padding:12px}
+      .notebook{grid-template-columns:1fr}
+      .paper{padding:18px 16px 120px 30px}
+      .paper:before{left:8px}
+      .rail{display:none}
+      .grid2{grid-template-columns:1fr}
+      .doc-header{flex-direction:column;align-items:flex-start}
+      .doc-header button{width:100%}
+      textarea{min-height:120px;line-height:24px}
+      .edge-tabs{display:none}
+    }
+
+
+    /* Hide Group switcher (navbar) on docs pages */
+    #group-switcher, label[for="group-switcher"], #groupSwitcherStatus { display:none !important; }
+  </style>
+</head>
+<body data-doc-page="docs">
+  <!-- Shared navbar -->
+  <div id="navbar"></div>
+
+  <nav class="edge-tabs" aria-label="Documents quick links">
+    <a href="/documents/documents.html" data-doc-page="docs" title="Docs home">📁</a>
+    <a href="/documents/documents.html?cat=Finance" data-cat="Finance" title="Finance">💵</a>
+    <a href="/documents/documents.html?cat=Medical" data-cat="Medical" title="Medical">🩺</a>
+    <a href="/documents/documents.html?cat=HR" data-cat="HR" title="HR">🏢</a>
+    <a href="/documents/documents.html?cat=Caregiving" data-cat="Caregiving" title="Caregiving">🧩</a>
+    <a href="/documents/documents.html?cat=ISA" data-cat="ISA" title="ISA / IEP">📚</a>
+    <a href="/documents/documents.html?cat=Year%20End%20Paperwork" data-cat="Year End Paperwork" title="Year End">📦</a>
+    <a href="/documents/documents.html?cat=Guardianship" data-cat="Guardianship" title="Guardianship">🛡️</a>
+    <a href="/documents/minutes-form.html" data-doc-page="minutes" title="Meeting Minutes">📝</a>
+  </nav>
+
+  <div class="page">
+    <!-- Main content -->
+    <div>
+      <div class="notebook">
+        <div class="paper">
+          <h1 id="formHeading">Add Document — <span id="catLabel">Finance</span></h1>
+          <p id="editNotice" class="muted" style="display:none;margin:6px 0 0;">
+            Editing this document. Uploading a new file will replace the current attachment.
+          </p>
+
+          <form id="doc-form-pretty">
+            <input type="hidden" id="docCategory" value="Finance" />
+
+            <div class="grid2">
+              <div>
+                <label for="docTitle">Title</label>
+                <input id="docTitle" type="text" placeholder="e.g., Invoice 1032 / Guardianship Renewal" />
+              </div>
+              <div>
+                <label for="docDate">Document Date</label>
+                <input id="docDate" type="datetime-local" />
+              </div>
+            </div>
+
+            <div class="grid2" style="margin-top:8px">
+              <div>
+                <label for="docType">Type</label>
+                <select id="docType">
+                  <option value="upload">Upload (General)</option>
+                  <option value="appointment_notes">Appointment Notes</option>
+                  <option value="email">Email</option>
+                  <option value="text">Text</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="docTags">Tags (comma separated)</label>
+                <input id="docTags" type="text" placeholder="medical, school, ISA" />
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <label for="docDescription">Description / Notes</label>
+            <textarea id="docDescription" placeholder="Short description or notes…"></textarea>
+
+            <!-- Medical-only extras (shows when the Medical tab is active) -->
+            <div id="medicalExtras" style="display:none">
+              <div class="divider"></div>
+              <h3 style="margin:0 0 8px">Medical Details</h3>
+
+              <div class="grid2">
+                <div>
+                  <label for="medicalNextDate">Next Appointment Date/Time</label>
+                  <input id="medicalNextDate" type="datetime-local" />
+                </div>
+                <div>
+                  <label for="medicalNextLink">Meeting Link (Telehealth)</label>
+                  <input id="medicalNextLink" type="text" placeholder="https://zoom.us/... or https://teams.microsoft.com/..." />
+                </div>
+              </div>
+
+              <label for="medicalNotes" style="margin-top:8px">Appointment Notes / Instructions</label>
+              <textarea id="medicalNotes" placeholder="e.g., No allergy medication two weeks prior; bring ID & insurance card…"></textarea>
+            </div>
+
+            <label for="docFile" class="section" style="margin-top:8px">Attach File (optional)</label>
+            <input id="docFile" type="file" accept=".pdf,.jpg,.jpeg" />
+            <div class="muted">Upload JPG or PDF only. Files are private; the app uses time-limited links for viewing.</div>
+
+            <div style="margin-top:14px">
+              <button class="btn" type="submit" id="docSubmitBtn">Save Document</button>
+              <button class="btn secondary" type="reset" id="docResetBtn">Clear</button>
+              <button class="btn secondary" type="button" id="docCancelEdit" style="display:none">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="rail" aria-hidden="true">
+          <!-- Pencil -->
+          <svg class="pencil" viewBox="0 0 80 460" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="wood" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f5deb3"/><stop offset="1" stop-color="#e9c999"/></linearGradient></defs>
+            <rect x="10" y="0" width="60" height="70" rx="8" fill="#fca5a5"/>
+            <rect x="10" y="68" width="60" height="10" fill="#9ca3af"/>
+            <rect x="10" y="78" width="60" height="310" fill="#f59e0b"/>
+            <rect x="18" y="78" width="44" height="310" fill="#fbbf24" opacity=".6"/>
+            <polygon points="10,388 70,388 40,458" fill="url(#wood)"/>
+            <polygon points="26,420 54,420 40,458" fill="#111"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="doc-header">
+        <h2><span id="catListLabel">Finance</span> Documents</h2>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn secondary" type="button" id="docsNotesBtn">View Notes</button>
+          <button class="btn secondary" type="button" id="docsPrintBtn">View / Print</button>
+          <button class="btn secondary" type="button" id="docsSharePinBtn">Set Share PIN</button>
+        </div>
+      </div>
+      <div id="docs-list"></div>
+    </div>
+
+  </div>
+
+ <!-- documents page logic (module) -->
+<script type="module" src="/documents/documents.js?v=2025.01.09E"></script>
+
+<!-- site shell: drawer + bars + floating avatar  -->
+<script defer src="/scripts/appbar-drawer.js?v=2025.01.09E"></script>
+<script defer src="/ui-shell.js?v=2025.01.09E"></script>
+<script type="module" src="/avatar-float.js?v=2025.01.09E"></script>
+<script>
+  (function(){
+    const cat = (document.body.dataset.docCat || '').toLowerCase();
+    const page = document.body.dataset.docPage || '';
+    document.querySelectorAll('.edge-tabs a').forEach(link => {
+      const linkCat = (link.dataset.cat || '').toLowerCase();
+      const linkPage = link.dataset.docPage || '';
+      if ((cat && linkCat === cat) || (page && linkPage === page)) {
+        link.setAttribute('aria-current', 'page');
+      }
+    });
+  })();
+</script>
+</body>
+</html>
