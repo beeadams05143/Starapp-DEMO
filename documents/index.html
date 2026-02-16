@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documents Home</title>
+  <style>
+    :root{ --ink:#1f2937; --paper:#fffdfa; --accent:#f59e0b; --rule:#e5e7eb; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; padding:24px; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#fafaf9; color:var(--ink); }
+    .page{ max-width:1100px; margin:0 auto; }
+    h1{ margin:0 0 6px; }
+    .sub{ color:#6b7280; margin:0 0 18px; }
+
+    .cards{ display:grid; gap:14px; grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .card{
+      display:block; text-decoration:none; color:inherit;
+      border:1px solid #e5e7eb; border-radius:16px; padding:16px;
+      background:var(--paper); box-shadow:0 10px 24px rgba(0,0,0,.06);
+      transition:transform .08s ease, box-shadow .12s ease;
+    }
+    .card:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.1); }
+    .card .eyebrow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .card .emoji{
+      width:30px;
+      height:30px;
+      border-radius:9px;
+      background:#111;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:16px;
+      box-shadow:0 6px 14px rgba(0,0,0,.18);
+    }
+    .card h3{ margin:0 0 6px; font-size:18px; }
+    .card p{ margin:0; color:#6b7280; font-size:13px; line-height:1.4; }
+    .card .badge{ font-size:12px; font-weight:700; color:#111; display:inline-block; margin-bottom:8px; }
+
+    /* Right-edge quick nav bubbles */
+    .edge-tabs {
+      position: fixed;
+      right: 12px;
+      top: 88px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1050;
+    }
+    .edge-tabs a {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      background: #111;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.22);
+      opacity: .92;
+      transition: transform .08s ease, opacity .08s ease;
+      font-size: 20px;
+    }
+    .edge-tabs a:hover { transform: translateY(-1px); opacity: 1; }
+    .edge-tabs a[aria-current="page"] {
+      outline: 3px solid #ffd166;
+      outline-offset: 2px;
+      background: #1b1b1b;
+    }
+    @media (max-width: 920px){ .cards{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 620px){
+      body{ padding:14px; }
+      .cards{ grid-template-columns:1fr; }
+      .edge-tabs{ top:auto; bottom: calc(var(--tabbar-h,72px) + 12px); right:10px; flex-direction:row; }
+      .edge-tabs a{ width:36px; height:36px; font-size:16px; border-radius:10px; }
+    }
+    @media print { .edge-tabs { display:none !important; } }
+
+    /* Hide Group switcher (navbar) on docs pages */
+    #group-switcher, label[for="group-switcher"], #groupSwitcherStatus { display:none !important; }
+  </style>
+</head>
+<body data-doc-page="docs">
+  <!-- Shared navbar -->
+  <div id="navbar"></div>
+
+  <nav class="edge-tabs" aria-label="Documents quick links">
+    <a href="/documents/index.html" data-doc-page="docs" title="Docs home">📁</a>
+    <a href="/documents/documents.html?cat=Finance" data-cat="Finance" title="Finance">💵</a>
+    <a href="/documents/documents.html?cat=Medical" data-cat="Medical" title="Medical">🩺</a>
+    <a href="/documents/documents.html?cat=HR" data-cat="HR" title="HR">🏢</a>
+    <a href="/documents/documents.html?cat=Caregiving" data-cat="Caregiving" title="Caregiving">🧩</a>
+    <a href="/documents/documents.html?cat=ISA" data-cat="ISA" title="ISA / IEP">📚</a>
+    <a href="/documents/documents.html?cat=Year%20End%20Paperwork" data-cat="Year End Paperwork" title="Year End">📦</a>
+    <a href="/documents/documents.html?cat=Guardianship" data-cat="Guardianship" title="Guardianship">🛡️</a>
+    <a href="/documents/minutes-form.html" data-doc-page="minutes" title="Meeting Minutes">📝</a>
+  </nav>
+
+  <div class="page">
+    <h1>Documents Home</h1>
+    <p class="sub">Choose a category to add or review documents.</p>
+
+    <div class="cards">
+      <a class="card" href="/documents/documents.html?cat=Finance">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">💵</span>
+          <span class="badge">Finance</span>
+        </div>
+        <h3>Invoices, benefits, payments</h3>
+        <p>Track billing, reimbursements, and financial paperwork.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=Medical">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">🩺</span>
+          <span class="badge">Medical</span>
+        </div>
+        <h3>Visits, notes, prescriptions</h3>
+        <p>Store appointment notes and medical instructions.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=HR">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">🏢</span>
+          <span class="badge">HR</span>
+        </div>
+        <h3>Employment and staffing</h3>
+        <p>Keep HR forms and caregiver staffing records.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=Caregiving">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">🧩</span>
+          <span class="badge">Caregiving</span>
+        </div>
+        <h3>Care plans and daily notes</h3>
+        <p>Capture care routines, observations, and progress.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=ISA">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">📚</span>
+          <span class="badge">ISA / IEP</span>
+        </div>
+        <h3>School and support plans</h3>
+        <p>Organize learning plans and education documents.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=Year%20End%20Paperwork">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">📦</span>
+          <span class="badge">Year End Paperwork</span>
+        </div>
+        <h3>Annual summaries</h3>
+        <p>Collect tax and year-end administrative files.</p>
+      </a>
+      <a class="card" href="/documents/documents.html?cat=Guardianship">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">🛡️</span>
+          <span class="badge">Guardianship</span>
+        </div>
+        <h3>Legal and guardianship</h3>
+        <p>Keep court orders and guardianship documentation.</p>
+      </a>
+      <a class="card" href="/documents/minutes-form.html">
+        <div class="eyebrow">
+          <span class="emoji" aria-hidden="true">📝</span>
+          <span class="badge">Meeting Minutes</span>
+        </div>
+        <h3>Meeting notes</h3>
+        <p>Capture agendas, decisions, and action items.</p>
+      </a>
+    </div>
+  </div>
+
+  <script defer src="/scripts/appbar-drawer.js?v=2026.02.16A"></script>
+  <script defer src="/ui-shell.js?v=2026.02.16A"></script>
+  <script type="module" src="/avatar-float.js?v=2026.02.16A"></script>
+  <script>
+    (function(){
+      const cat = (document.body.dataset.docCat || '').toLowerCase();
+      const page = document.body.dataset.docPage || '';
+      document.querySelectorAll('.edge-tabs a').forEach(link => {
+        const linkCat = (link.dataset.cat || '').toLowerCase();
+        const linkPage = link.dataset.docPage || '';
+        if ((cat && linkCat === cat) || (page && linkPage === page)) {
+          link.setAttribute('aria-current', 'page');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

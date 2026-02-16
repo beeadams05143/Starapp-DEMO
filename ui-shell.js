@@ -1,6 +1,6 @@
 // ui-shell.js  — injects top app bar + bottom tab bar (with Emergency)
 (() => {
-  const BUILD_VERSION = (typeof window !== 'undefined' && window.STAR_BUILD_VERSION) || '2025.01.09E';
+  const BUILD_VERSION = (typeof window !== 'undefined' && window.STAR_BUILD_VERSION) || '2026.02.16A';
   if (typeof window !== 'undefined' && !window.STAR_BUILD_VERSION) {
     window.STAR_BUILD_VERSION = BUILD_VERSION;
   }
@@ -90,7 +90,7 @@
         <a href="/dashboard.html"class="tab"><span class="icon">🏠</span><span class="label">Home</span></a>
      <a href="/calendar.html"class="tab"><span class="icon">📅</span><span class="label">Calendar</span></a>
         <a href="/caregiver-report.html"class="tab"><span class="icon">📊</span><span class="label">Reports</span></a>
-        <a href="/documents/documents.html"class="tab"><span class="icon">📂</span><span class="label">Docs</span></a>
+        <a href="/documents/index.html"class="tab"><span class="icon">📂</span><span class="label">Docs</span></a>
         <a href="/emergency-medical.html"class="tab"><span class="icon">🚑</span><span class="label">Emergency</span></a>
       </div>
     </nav>

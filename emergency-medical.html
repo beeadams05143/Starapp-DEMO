@@ -73,6 +73,12 @@
 
     /* status line */
     .statusline{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; color:#555; margin-top:6px; }
+
+    .demo-avatar-lock .photo-actions,
+    .demo-avatar-lock #profileInput{
+      display:none !important;
+    }
+    .demo-avatar-lock .photo-uploader{ cursor:default; }
   </style>
 </head>
 <body>
@@ -256,6 +262,7 @@
     import { uploadJsonToBucket, downloadJsonFromBucket } from './shared-storage.js?v=2025.01.09E';
 
     const FORCE_EMERGENCY_DEMO = true;
+    const DEMO_AVATAR_URL = '/IMG/default-avatar.png';
     const DEMO_EMERGENCY_PAYLOAD = {
       name: 'Sample Individual',
       address: '123 Demo Lane',
@@ -404,68 +411,74 @@
       placeholder.style.display = 'grid';
       pendingFile = null;
     }
-    chooseBtn.addEventListener('click', () => { if (canEdit) input.click(); });
-    drop.addEventListener('click', () => { if (canEdit) input.click(); });
-    ['dragenter','dragover'].forEach(evt => drop.addEventListener(evt, e => { if (!canEdit) return; e.preventDefault(); drop.classList.add('dragover'); }));
-    ['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e => { if (!canEdit) return; e.preventDefault(); drop.classList.remove('dragover'); }));
-    drop.addEventListener('drop', e => {
-      if (!canEdit) return;
-      const f = e.dataTransfer.files?.[0];
-      if (f && f.type.startsWith('image/')) handleChosenFile(f);
-    });
-    input.addEventListener('change', e => { if (!canEdit) return; const f = e.target.files?.[0]; if (f && f.type.startsWith('image/')) handleChosenFile(f); });
-    function handleChosenFile(file) { pendingFile = file; const url = URL.createObjectURL(file); setPreview(url); saveStatus.textContent = 'Ready to save…'; }
-    removeBtn.addEventListener('click', () => {
-      if (!canEdit) return;
-      localStorage.removeItem('emergencyProfilePhotoURL');
-      clearPreview();
-      saveStatus.textContent = 'Photo removed (not yet saved to cloud).';
-    });
+    if (FORCE_EMERGENCY_DEMO) {
+      document.body.classList.add('demo-avatar-lock');
+      setPreview(DEMO_AVATAR_URL);
+      if (saveStatus) saveStatus.textContent = 'Demo avatar locked.';
+    } else {
+      chooseBtn.addEventListener('click', () => { if (canEdit) input.click(); });
+      drop.addEventListener('click', () => { if (canEdit) input.click(); });
+      ['dragenter','dragover'].forEach(evt => drop.addEventListener(evt, e => { if (!canEdit) return; e.preventDefault(); drop.classList.add('dragover'); }));
+      ['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e => { if (!canEdit) return; e.preventDefault(); drop.classList.remove('dragover'); }));
+      drop.addEventListener('drop', e => {
+        if (!canEdit) return;
+        const f = e.dataTransfer.files?.[0];
+        if (f && f.type.startsWith('image/')) handleChosenFile(f);
+      });
+      input.addEventListener('change', e => { if (!canEdit) return; const f = e.target.files?.[0]; if (f && f.type.startsWith('image/')) handleChosenFile(f); });
+      function handleChosenFile(file) { pendingFile = file; const url = URL.createObjectURL(file); setPreview(url); saveStatus.textContent = 'Ready to save…'; }
+      removeBtn.addEventListener('click', () => {
+        if (!canEdit) return;
+        localStorage.removeItem('emergencyProfilePhotoURL');
+        clearPreview();
+        saveStatus.textContent = 'Photo removed (not yet saved to cloud).';
+      });
 
-    saveBtn.addEventListener('click', async () => {
-      if (!canEdit) { alert('View-only mode: only the owner can update this record.'); return; }
-      saveBtn.disabled = true; saveStatus.textContent = 'Saving photo…';
-      if (!pendingFile && preview.src) { localStorage.setItem('emergencyProfilePhotoURL', preview.src); saveStatus.textContent = 'Saved locally.'; saveBtn.disabled = false; return; }
-      try {
-        const uid = session?.user?.id;
-        if (!uid) throw new Error('Not signed in');
-        const token = session?.access_token;
-        if (!token) throw new Error('Missing access token');
-        const ext = (pendingFile?.name?.split('.').pop() || 'jpg').toLowerCase();
-        const safeName = `${Date.now()}.${ext}`;
-        const path = `${uid}/${safeName}`;
-        const storageUrl = `${SUPABASE_URL}/storage/v1/object/profile-photos/${path}`;
-        const uploadRes = await fetch(storageUrl, {
-          method: 'POST',
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${token}`,
-            'Content-Type': pendingFile.type || 'application/octet-stream',
-            'x-upsert': 'true',
-          },
-          body: pendingFile,
-        });
-        if (!uploadRes.ok) throw new Error(await uploadRes.text() || 'Upload failed');
-        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/profile-photos/${path}`;
-        await rest(`profiles?id=eq.${encodeURIComponent(uid)}`, {
-          method: 'PATCH',
-          headers: { Prefer: 'return=minimal' },
-          body: JSON.stringify({ avatar_url: publicUrl }),
-        });
-        localStorage.setItem('emergencyProfilePhotoURL', publicUrl);
-        setPreview(publicUrl); pendingFile = null; saveStatus.textContent = 'Photo saved!';
-        const navAvatar = document.getElementById('navAvatar'); if (navAvatar) navAvatar.src = publicUrl;
-      } catch (e) {
+      saveBtn.addEventListener('click', async () => {
+        if (!canEdit) { alert('View-only mode: only the owner can update this record.'); return; }
+        saveBtn.disabled = true; saveStatus.textContent = 'Saving photo…';
+        if (!pendingFile && preview.src) { localStorage.setItem('emergencyProfilePhotoURL', preview.src); saveStatus.textContent = 'Saved locally.'; saveBtn.disabled = false; return; }
         try {
-          const b64 = await fileToBase64(pendingFile);
-          localStorage.setItem('emergencyProfilePhotoURL', b64);
-          setPreview(b64);
-          saveStatus.textContent = 'Saved locally (offline fallback).'; pendingFile = null;
-        } catch (e2) { console.error(e2); saveStatus.textContent = 'Save failed. Please try again.'; }
-      } finally { saveBtn.disabled = false; }
-    });
-    function fileToBase64(file) { return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(file); }); }
-    initExistingPhoto();
+          const uid = session?.user?.id;
+          if (!uid) throw new Error('Not signed in');
+          const token = session?.access_token;
+          if (!token) throw new Error('Missing access token');
+          const ext = (pendingFile?.name?.split('.').pop() || 'jpg').toLowerCase();
+          const safeName = `${Date.now()}.${ext}`;
+          const path = `${uid}/${safeName}`;
+          const storageUrl = `${SUPABASE_URL}/storage/v1/object/profile-photos/${path}`;
+          const uploadRes = await fetch(storageUrl, {
+            method: 'POST',
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${token}`,
+              'Content-Type': pendingFile.type || 'application/octet-stream',
+              'x-upsert': 'true',
+            },
+            body: pendingFile,
+          });
+          if (!uploadRes.ok) throw new Error(await uploadRes.text() || 'Upload failed');
+          const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/profile-photos/${path}`;
+          await rest(`profiles?id=eq.${encodeURIComponent(uid)}`, {
+            method: 'PATCH',
+            headers: { Prefer: 'return=minimal' },
+            body: JSON.stringify({ avatar_url: publicUrl }),
+          });
+          localStorage.setItem('emergencyProfilePhotoURL', publicUrl);
+          setPreview(publicUrl); pendingFile = null; saveStatus.textContent = 'Photo saved!';
+          const navAvatar = document.getElementById('navAvatar'); if (navAvatar) navAvatar.src = publicUrl;
+        } catch (e) {
+          try {
+            const b64 = await fileToBase64(pendingFile);
+            localStorage.setItem('emergencyProfilePhotoURL', b64);
+            setPreview(b64);
+            saveStatus.textContent = 'Saved locally (offline fallback).'; pendingFile = null;
+          } catch (e2) { console.error(e2); saveStatus.textContent = 'Save failed. Please try again.'; }
+        } finally { saveBtn.disabled = false; }
+      });
+      function fileToBase64(file) { return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(file); }); }
+      initExistingPhoto();
+    }
 
     // ---------- FORM (draft + Supabase) ----------
     const DRAFT_KEY = FORCE_EMERGENCY_DEMO ? 'emergencyMedicalDraft:demo:v1' : 'emergencyMedicalDraft:v1';
@@ -537,7 +550,7 @@
         communication_needs: $('communicationNeeds').value.trim(),
         emergency_instructions: $('emergencyNotes').value.trim(),
         interaction_tips: $('interactionTips').value.trim(),
-        avatar_url: preview?.src || null,
+        avatar_url: FORCE_EMERGENCY_DEMO ? DEMO_AVATAR_URL : (preview?.src || null),
         contacts,
         medications
       };
@@ -556,7 +569,11 @@
       $('communicationNeeds').value = data.communication_needs || '';
       $('emergencyNotes').value = data.emergency_instructions || '';
       $('interactionTips').value = data.interaction_tips || '';
-      if(data.avatar_url){ setPreview(data.avatar_url); }
+      if (FORCE_EMERGENCY_DEMO) {
+        setPreview(DEMO_AVATAR_URL);
+      } else if (data.avatar_url) {
+        setPreview(data.avatar_url);
+      }
       contacts = Array.isArray(data.contacts) ? data.contacts : [];
       medications = Array.isArray(data.medications) ? data.medications : [];
       renderLists();

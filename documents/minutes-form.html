@@ -106,6 +106,38 @@
         linear-gradient(#0000, #0000 29px, rgba(37,99,235,.08) 30px) 0 0/100% 30px repeat-y;
     }
 
+    .dictation-toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin:6px 0 10px;
+    }
+    .dictation-toolbar .dict-btn{
+      border:1px solid #e5e7eb;
+      background:#fff;
+      color:#111;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:600;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .dictation-toolbar .dict-btn.mic{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+    .dictation-toolbar .dict-btn[aria-pressed="true"]{
+      background:#16a34a;
+      border-color:#16a34a;
+      color:#fff;
+    }
+    .dictation-toolbar .dict-status{
+      font-size:12px;
+      color:#6b7280;
+    }
+
     .grid2{ display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
     .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
@@ -192,7 +224,7 @@
 
   <!-- Quick links to other Documents pages -->
   <nav class="edge-tabs" aria-label="Documents quick links">
-    <a href="/documents/documents.html" data-doc-page="docs" title="Docs home">📁</a>
+    <a href="/documents/index.html" data-doc-page="docs" title="Docs home">📁</a>
     <a href="/documents/documents.html?cat=Finance" data-cat="Finance" title="Finance">💵</a>
     <a href="/documents/documents.html?cat=Medical" data-cat="Medical" title="Medical">🩺</a>
     <a href="/documents/documents.html?cat=HR" data-cat="HR" title="HR">🏢</a>
@@ -252,6 +284,16 @@
         <textarea id="agenda" placeholder="1) Welcome&#10;2) Review goals&#10;3) Next steps"></textarea>
 
         <label for="notes" style="margin-top:10px">Discussion Notes</label>
+        <div class="dictation-toolbar" data-dictation-for="notes">
+          <button class="dict-btn mic" type="button" data-dictation-mic aria-pressed="false">🎤 Dictate</button>
+          <button class="dict-btn" type="button" data-speaker="Doctor">Doctor</button>
+          <button class="dict-btn" type="button" data-speaker="Mom">Mom</button>
+          <button class="dict-btn" type="button" data-speaker="Dad">Dad</button>
+          <button class="dict-btn" type="button" data-speaker="Caregiver">Caregiver</button>
+          <button class="dict-btn" type="button" data-speaker="Case Manager">Case Manager</button>
+          <button class="dict-btn" type="button" data-speaker="Other">Other</button>
+          <span class="dict-status" data-dictation-status></span>
+        </div>
         <textarea id="notes" placeholder="Type the discussion here…"></textarea>
 
         <div class="grid2" style="margin-top:8px">
@@ -328,6 +370,108 @@
   <!-- Logic -->
   <script type="module">
     import { uploadFileToBucket, saveMinutesRich } from "./documents.js";
+
+    const DictationSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let activeDictationStopper = null;
+
+    function insertSpeakerLine(textarea, name) {
+      if (!textarea || !name) return;
+      const current = textarea.value || "";
+      const needsBreak = current && !current.endsWith("\n");
+      textarea.value = `${current}${needsBreak ? "\n" : ""}${name}: `;
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+    }
+
+    function appendDictationText(textarea, text) {
+      if (!textarea || !text) return;
+      const current = textarea.value || "";
+      const spacer = current && !/[\s\n]$/.test(current) ? " " : "";
+      textarea.value = `${current}${spacer}${text.trim()} `;
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+    }
+
+    function wireDictationToolbar(toolbar) {
+      const targetId = toolbar?.dataset?.dictationFor;
+      const textarea = targetId ? document.getElementById(targetId) : null;
+      const micBtn = toolbar?.querySelector("[data-dictation-mic]");
+      const statusEl = toolbar?.querySelector("[data-dictation-status]");
+      if (!textarea || !micBtn) return;
+
+      toolbar.querySelectorAll("[data-speaker]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const raw = btn.dataset.speaker || "";
+          const name = raw === "Other" ? (prompt("Speaker name?") || "").trim() : raw;
+          if (!name) return;
+          insertSpeakerLine(textarea, name);
+        });
+      });
+
+      if (!DictationSpeechRecognition) {
+        micBtn.disabled = true;
+        if (statusEl) {
+          statusEl.textContent = "Dictation isn't supported in this browser (iOS Safari does not support Web Speech).";
+        }
+        return;
+      }
+
+      const recognition = new DictationSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+      let listening = false;
+
+      const stopListening = () => {
+        if (!listening) return;
+        recognition.stop();
+      };
+
+      const startListening = () => {
+        if (listening) return;
+        if (activeDictationStopper && activeDictationStopper !== stopListening) {
+          activeDictationStopper();
+        }
+        recognition.start();
+      };
+
+      micBtn.addEventListener("click", () => {
+        if (listening) stopListening();
+        else startListening();
+      });
+
+      recognition.onstart = () => {
+        listening = true;
+        activeDictationStopper = stopListening;
+        micBtn.setAttribute("aria-pressed", "true");
+        if (statusEl) statusEl.textContent = "Listening…";
+      };
+      recognition.onend = () => {
+        listening = false;
+        if (activeDictationStopper === stopListening) activeDictationStopper = null;
+        micBtn.setAttribute("aria-pressed", "false");
+        if (statusEl) statusEl.textContent = "";
+      };
+      recognition.onerror = (event) => {
+        if (statusEl) {
+          statusEl.textContent = event?.error === "not-allowed"
+            ? "Microphone access blocked."
+            : "Dictation error.";
+        }
+      };
+      recognition.onresult = (event) => {
+        let finalText = "";
+        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalText += result[0]?.transcript || "";
+          }
+        }
+        if (finalText) appendDictationText(textarea, finalText);
+      };
+    }
+
+    document.querySelectorAll(".dictation-toolbar").forEach(wireDictationToolbar);
 
     // attendees UI
     const attendees = [];
@@ -468,13 +612,13 @@
   <script type="module" src="/script.js?v=2025.01.09E"></script>
 
   <!-- Top app bar + bottom tabs (creates #openMenu) -->
-  <script defer src="/ui-shell.js?v=2025.01.09E"></script>
+  <script defer src="/ui-shell.js?v=2026.02.16A"></script>
 
   <!-- Hamburger drawer (depends on #openMenu created by ui-shell) -->
-  <script defer src="/scripts/appbar-drawer.js?v=2025.01.09E"></script>
+  <script defer src="/scripts/appbar-drawer.js?v=2026.02.16A"></script>
 
   <!-- Floating avatar (top-right across pages) -->
-  <script type="module" src="/avatar-float.js?v=2025.01.09E"></script>
+  <script type="module" src="/avatar-float.js?v=2026.02.16A"></script>
   <script>
     (function(){
       const cat = (document.body.dataset.docCat || '').toLowerCase();

@@ -70,6 +70,38 @@
     }
     .doc-attachment-preview.has-image .preview-status{ display:none; }
 
+    .dictation-toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin:6px 0 10px;
+    }
+    .dictation-toolbar .dict-btn{
+      border:1px solid #e5e7eb;
+      background:#fff;
+      color:#111;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:600;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .dictation-toolbar .dict-btn.mic{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+    .dictation-toolbar .dict-btn[aria-pressed="true"]{
+      background:#16a34a;
+      border-color:#16a34a;
+      color:#fff;
+    }
+    .dictation-toolbar .dict-status{
+      font-size:12px;
+      color:#6b7280;
+    }
+
     /* Right-edge quick nav bubbles */
     .edge-tabs {
       position: fixed;
@@ -134,7 +166,7 @@
   <div id="navbar"></div>
 
   <nav class="edge-tabs" aria-label="Documents quick links">
-    <a href="/documents/documents.html" data-doc-page="docs" title="Docs home">📁</a>
+    <a href="/documents/index.html" data-doc-page="docs" title="Docs home">📁</a>
     <a href="/documents/documents.html?cat=Finance" data-cat="Finance" title="Finance">💵</a>
     <a href="/documents/documents.html?cat=Medical" data-cat="Medical" title="Medical">🩺</a>
     <a href="/documents/documents.html?cat=HR" data-cat="HR" title="HR">🏢</a>
@@ -189,6 +221,16 @@
             <div class="divider"></div>
 
             <label for="docDescription">Description / Notes</label>
+            <div class="dictation-toolbar" data-dictation-for="docDescription">
+              <button class="dict-btn mic" type="button" data-dictation-mic aria-pressed="false">🎤 Dictate</button>
+              <button class="dict-btn" type="button" data-speaker="Doctor">Doctor</button>
+              <button class="dict-btn" type="button" data-speaker="Mom">Mom</button>
+              <button class="dict-btn" type="button" data-speaker="Dad">Dad</button>
+              <button class="dict-btn" type="button" data-speaker="Caregiver">Caregiver</button>
+              <button class="dict-btn" type="button" data-speaker="Case Manager">Case Manager</button>
+              <button class="dict-btn" type="button" data-speaker="Other">Other</button>
+              <span class="dict-status" data-dictation-status></span>
+            </div>
             <textarea id="docDescription" placeholder="Short description or notes…"></textarea>
 
             <!-- Medical-only extras (shows when the Medical tab is active) -->
@@ -208,6 +250,16 @@
               </div>
 
               <label for="medicalNotes" style="margin-top:8px">Appointment Notes / Instructions</label>
+              <div class="dictation-toolbar" data-dictation-for="medicalNotes">
+                <button class="dict-btn mic" type="button" data-dictation-mic aria-pressed="false">🎤 Dictate</button>
+                <button class="dict-btn" type="button" data-speaker="Doctor">Doctor</button>
+                <button class="dict-btn" type="button" data-speaker="Mom">Mom</button>
+                <button class="dict-btn" type="button" data-speaker="Dad">Dad</button>
+                <button class="dict-btn" type="button" data-speaker="Caregiver">Caregiver</button>
+                <button class="dict-btn" type="button" data-speaker="Case Manager">Case Manager</button>
+                <button class="dict-btn" type="button" data-speaker="Other">Other</button>
+                <span class="dict-status" data-dictation-status></span>
+              </div>
               <textarea id="medicalNotes" placeholder="e.g., No allergy medication two weeks prior; bring ID & insurance card…"></textarea>
             </div>
 
@@ -251,12 +303,12 @@
   </div>
 
  <!-- documents page logic (module) -->
-<script type="module" src="/documents/documents.js?v=2025.01.09E"></script>
+<script type="module" src="/documents/documents.js?v=2026.02.16A"></script>
 
 <!-- site shell: drawer + bars + floating avatar  -->
-<script defer src="/scripts/appbar-drawer.js?v=2025.01.09E"></script>
-<script defer src="/ui-shell.js?v=2025.01.09E"></script>
-<script type="module" src="/avatar-float.js?v=2025.01.09E"></script>
+<script defer src="/scripts/appbar-drawer.js?v=2026.02.16A"></script>
+<script defer src="/ui-shell.js?v=2026.02.16A"></script>
+<script type="module" src="/avatar-float.js?v=2026.02.16A"></script>
 <script>
   (function(){
     const cat = (document.body.dataset.docCat || '').toLowerCase();

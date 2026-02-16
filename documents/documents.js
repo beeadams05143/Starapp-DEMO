@@ -1275,6 +1275,109 @@ tabs.forEach(btn => {
   });
 });
 
+/* ------------ dictation toolbar ------------ */
+const DictationSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let activeDictationStopper = null;
+
+function insertSpeakerLine(textarea, name) {
+  if (!textarea || !name) return;
+  const current = textarea.value || "";
+  const needsBreak = current && !current.endsWith("\n");
+  textarea.value = `${current}${needsBreak ? "\n" : ""}${name}: `;
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+}
+
+function appendDictationText(textarea, text) {
+  if (!textarea || !text) return;
+  const current = textarea.value || "";
+  const spacer = current && !/[\s\n]$/.test(current) ? " " : "";
+  textarea.value = `${current}${spacer}${text.trim()} `;
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+}
+
+function wireDictationToolbar(toolbar) {
+  const targetId = toolbar?.dataset?.dictationFor;
+  const textarea = targetId ? document.getElementById(targetId) : null;
+  const micBtn = toolbar?.querySelector("[data-dictation-mic]");
+  const statusEl = toolbar?.querySelector("[data-dictation-status]");
+  if (!textarea || !micBtn) return;
+
+  toolbar.querySelectorAll("[data-speaker]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const raw = btn.dataset.speaker || "";
+      const name = raw === "Other" ? (prompt("Speaker name?") || "").trim() : raw;
+      if (!name) return;
+      insertSpeakerLine(textarea, name);
+    });
+  });
+
+  if (!DictationSpeechRecognition) {
+    micBtn.disabled = true;
+    if (statusEl) {
+      statusEl.textContent = "Dictation isn't supported in this browser (iOS Safari does not support Web Speech).";
+    }
+    return;
+  }
+
+  const recognition = new DictationSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
+  let listening = false;
+
+  const stopListening = () => {
+    if (!listening) return;
+    recognition.stop();
+  };
+
+  const startListening = () => {
+    if (listening) return;
+    if (activeDictationStopper && activeDictationStopper !== stopListening) {
+      activeDictationStopper();
+    }
+    recognition.start();
+  };
+
+  micBtn.addEventListener("click", () => {
+    if (listening) stopListening();
+    else startListening();
+  });
+
+  recognition.onstart = () => {
+    listening = true;
+    activeDictationStopper = stopListening;
+    micBtn.setAttribute("aria-pressed", "true");
+    if (statusEl) statusEl.textContent = "Listening…";
+  };
+  recognition.onend = () => {
+    listening = false;
+    if (activeDictationStopper === stopListening) activeDictationStopper = null;
+    micBtn.setAttribute("aria-pressed", "false");
+    if (statusEl) statusEl.textContent = "";
+  };
+  recognition.onerror = (event) => {
+    if (statusEl) {
+      statusEl.textContent = event?.error === "not-allowed"
+        ? "Microphone access blocked."
+        : "Dictation error.";
+    }
+  };
+  recognition.onresult = (event) => {
+    let finalText = "";
+    for (let i = event.resultIndex; i < event.results.length; i += 1) {
+      const result = event.results[i];
+      if (result.isFinal) {
+        finalText += result[0]?.transcript || "";
+      }
+    }
+    if (finalText) appendDictationText(textarea, finalText);
+  };
+}
+
+document.querySelectorAll(".dictation-toolbar").forEach(wireDictationToolbar);
+
 /* ------------ form submit ------------ */
 const prettyForm = document.getElementById("doc-form-pretty");
 if (prettyForm) {
