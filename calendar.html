@@ -100,7 +100,7 @@
       main.cal-wrap{ padding:10px; }
       .notebook{ grid-template-columns:1fr; }
       .rail{ display:none; }
-      .paper{ padding:16px 12px 110px 24px; }
+      .paper{ padding:16px 12px 24px 24px; }
       .paper:before{ left:6px; }
       .month-title{ font-size:20px; }
       .weekday-row{ margin:0 6px 4px 6px; font-size:11px; }
@@ -111,7 +111,12 @@
       .event-header{ flex-direction:column; align-items:flex-start; gap:8px; }
       .event-header .btn{ width:100%; }
       .event{ padding:8px; }
-      .calendar-actions{ bottom:64px; padding:10px 12px; }
+      .calendar-actions{
+        position:static;
+        margin:10px 6px 12px;
+        border-radius:12px;
+        box-shadow:0 6px 16px rgba(15,23,42,.08);
+      }
     }
 
     /* ===== Calendar hardening overrides ===== */
