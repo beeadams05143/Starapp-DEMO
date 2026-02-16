@@ -29,15 +29,15 @@
     .sheet::before{content:"";position:absolute;left:32px;top:0;bottom:0;width:2px;background:var(--margin-line);}
 
     h1,h2,h3,label,.label{font-family:"Comic Neue","Bradley Hand","Segoe Print",system-ui,sans-serif;}
-    h1{margin:0 0 6px;font-size:28px;letter-spacing:.2px;}
-    .sub{font-size:13px;opacity:.8;margin-bottom:14px;}
+    h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px;}
+    .sub{font-size:12px;opacity:.8;margin-bottom:12px;}
 
     .grid{display:grid;gap:12px;}
     .grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
     .grid-3{grid-template-columns:repeat(3,minmax(0,1fr));}
 
     .row{display:grid;grid-template-columns:160px 1fr;gap:8px;align-items:center;}
-    .row .label{font-weight:700;white-space:nowrap;}
+    .row .label{font-weight:700;white-space:nowrap;font-size:13px;}
 
     .card{background:rgba(255,255,255,.7);border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:14px;}
     .sticky{background:var(--accent);border:1px solid rgba(0,0,0,.15);transform:rotate(-1.2deg);box-shadow:0 3px 8px rgba(0,0,0,.15);}
@@ -73,7 +73,7 @@
     .pill input{accent-color:#222;transform:scale(.95);}
 
     .goal{border:2px solid rgba(0,0,0,.18);border-radius:12px;padding:10px;background:rgba(255,255,255,.65);}
-    .goal h3{margin:6px 0 8px;font-size:18px;}
+    .goal h3{margin:6px 0 8px;font-size:16px;}
     .goal-title{
       display:block;
       max-width:100%;
@@ -98,7 +98,7 @@
     .week-grid th,.week-grid td{border:1px solid rgba(0,0,0,.2);padding:8px;text-align:center;background:rgba(255,255,255,.6);}
 
     .btns{display:flex;gap:10px;flex-wrap:wrap;}
-    .btn{border:2px solid #222;background:#fff;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;
+    .btn{border:2px solid #222;background:#fff;padding:7px 12px;border-radius:10px;cursor:pointer;font-weight:700;
       box-shadow:2px 2px 0 #222;transition:transform .05s ease;}
     .btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #222;}
     .add-goal-wrap{margin-top:18px;}
@@ -119,23 +119,26 @@
     }
     @media (max-width:720px){
       body{overflow-x:hidden;}
-      .wrapper{margin:8px auto;padding:8px;}
-      .clipboard{padding:12px;}
-      .clip{width:86px;height:24px;top:-12px;}
-      .sheet{padding:16px 12px 18px 20px;}
-      .sheet::before{left:18px;}
-      h1{font-size:20px;}
-      h2{font-size:18px;}
+      .wrapper{margin:6px auto;padding:6px;}
+      .clipboard{padding:10px;border-radius:12px;}
+      .clip{width:72px;height:20px;top:-10px;}
+      .sheet{padding:12px 10px 14px 16px;border-radius:12px;}
+      .sheet::before{left:12px;}
+      h1{font-size:18px;}
+      h2{font-size:16px;}
+      .sub{font-size:12px;}
       .grid-2,.grid-3{grid-template-columns:1fr;}
-      .row{grid-template-columns:1fr;gap:4px;}
+      .row{grid-template-columns:1fr;gap:4px;max-width:100%;}
+      .topline .row{grid-template-columns:1fr;}
+      .row .label{font-size:13px;}
       .section-header{flex-direction:column;align-items:flex-start;gap:6px;}
       .btns{flex-direction:column;}
       .btns .btn{width:100%;}
       .week-grid{display:block;overflow-x:auto;width:100%;max-width:100%;min-width:0;}
       .week-grid thead, .week-grid tbody{display:table;width:100%;}
       .week-grid th,.week-grid td{padding:6px;font-size:12px;white-space:normal;word-break:break-word;}
-      textarea{min-height:110px;}
-      .input, select, textarea{font-size:15px;}
+      textarea{min-height:100px;}
+      .input, select, textarea{font-size:14px;}
     }
   </style>
 </head>
