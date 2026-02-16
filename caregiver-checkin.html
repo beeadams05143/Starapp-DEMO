@@ -76,28 +76,28 @@
     .entry-date-row label{margin:0;font-weight:800}
     .entry-date-row input[type="date"]{padding:8px 10px;border:1px solid #d1d5db;border-radius:10px;font-size:15px}
     .entry-date-row .muted{font-size:13px}
-    .movement-panel,.temp-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px;margin-top:12px}
-    .movement-head,.temp-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-    .movement-title,.temp-title{font-weight:900}
-    .movement-desc,.temp-desc{margin:4px 0 0;color:#64748b;font-size:13px}
-    .movement-yn,.temp-yn{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
-    .movement-pill,.temp-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1d5db;border-radius:999px;padding:6px 10px;background:#fff;font-weight:700}
-    .movement-pill input,.temp-pill input{width:auto}
-    .movement-body.is-collapsed,.temp-body.is-collapsed{display:none}
-    .movement-row,.temp-row{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:end}
-    .movement-label,.temp-label{font-weight:800;color:#1f2937;margin-bottom:6px}
-    .movement-chips,.temp-chips{display:flex;flex-wrap:wrap;gap:8px}
-    .movement-chip,.temp-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5f5;border-radius:10px;padding:6px 10px;background:#fff;font-weight:700;font-size:14px}
-    .movement-chip input,.temp-chip input{width:auto}
+    .movement-panel,.temp-panel,.med-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px;margin-top:12px}
+    .movement-head,.temp-head,.med-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .movement-title,.temp-title,.med-title{font-weight:900}
+    .movement-desc,.temp-desc,.med-desc{margin:4px 0 0;color:#64748b;font-size:13px}
+    .movement-yn,.temp-yn,.med-yn{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+    .movement-pill,.temp-pill,.med-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1d5db;border-radius:999px;padding:6px 10px;background:#fff;font-weight:700}
+    .movement-pill input,.temp-pill input,.med-pill input{width:auto}
+    .movement-body.is-collapsed,.temp-body.is-collapsed,.med-body.is-collapsed{display:none}
+    .movement-row,.temp-row,.med-row{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:end}
+    .movement-label,.temp-label,.med-label{font-weight:800;color:#1f2937;margin-bottom:6px}
+    .movement-chips,.temp-chips,.med-chips{display:flex;flex-wrap:wrap;gap:8px}
+    .movement-chip,.temp-chip,.med-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5f5;border-radius:10px;padding:6px 10px;background:#fff;font-weight:700;font-size:14px}
+    .movement-chip input,.temp-chip input,.med-chip input{width:auto}
     .movement-severity{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
     .movement-sev-btn{border:1px solid #cbd5f5;background:#fff;color:#1e3a8a;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer;min-width:36px}
     .movement-sev-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
     .movement-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .movement-details{margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
     .movement-details.is-hidden{display:none}
-    .movement-grid,.temp-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-    .movement-inline-input,.temp-inline-input{display:flex;gap:8px;align-items:center}
-    .movement-inline-input input[type="text"],.temp-inline-input input[type="text"]{flex:1}
+    .movement-grid,.temp-grid,.med-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+    .movement-inline-input,.temp-inline-input,.med-inline-input{display:flex;gap:8px;align-items:center}
+    .movement-inline-input input[type="text"],.temp-inline-input input[type="text"],.med-inline-input input[type="text"]{flex:1}
     .yn-pill-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .yn-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1d5db;border-radius:999px;padding:6px 10px;background:#fff;font-weight:700}
     .yn-pill input{width:auto}
@@ -424,6 +424,48 @@
 
               <label class="temp-label" for="temp_notes" style="margin-top:10px">Notes (optional)</label>
               <input type="text" name="temp_notes" id="temp_notes" placeholder="Short note, e.g. warm at 7am"/>
+            </div>
+          </div>
+          <div class="med-panel" id="medChangePanel">
+            <div class="med-head">
+              <div>
+                <div class="med-title">Medication Changes</div>
+                <p class="med-desc">Note any new meds, dose changes, or PRN use today.</p>
+              </div>
+            </div>
+
+            <div class="med-yn" role="group" aria-label="Medication changes today">
+              <strong>Medication change today?</strong>
+              <label class="med-pill"><input type="radio" name="med_change_present" value="no" checked> No</label>
+              <label class="med-pill"><input type="radio" name="med_change_present" value="yes"> Yes</label>
+            </div>
+
+            <div class="med-body is-collapsed" data-med-body-wrap>
+              <div class="med-row">
+                <div>
+                  <div class="med-label">Change type</div>
+                  <div class="med-chips">
+                    <label class="med-chip"><input type="checkbox" name="med_change_new">New medication</label>
+                    <label class="med-chip"><input type="checkbox" name="med_change_dose">Dose change</label>
+                    <label class="med-chip"><input type="checkbox" name="med_change_stopped">Stopped medication</label>
+                    <label class="med-chip"><input type="checkbox" name="med_change_prn">PRN given</label>
+                    <label class="med-chip"><input type="checkbox" name="med_change_other">Other</label>
+                  </div>
+                </div>
+                <div>
+                  <label class="med-label" for="med_change_time">Time / window</label>
+                  <input type="text" name="med_change_time" id="med_change_time" placeholder="e.g., 8:30am, afternoon"/>
+                </div>
+              </div>
+
+              <div class="med-inline-input" style="margin-top:8px">
+                <input type="text" name="med_change_name" id="med_change_name" placeholder="Medication name(s) (optional)"/>
+              </div>
+              <div class="med-inline-input" style="margin-top:8px">
+                <input type="text" name="med_change_details" id="med_change_details" placeholder="Dose / change details (optional)"/>
+              </div>
+              <label class="med-label" for="med_change_notes" style="margin-top:10px">Notes (optional)</label>
+              <input type="text" name="med_change_notes" id="med_change_notes" placeholder="Short note, e.g. new Rx started today"/>
             </div>
           </div>
           <label>Caregiver notes:<textarea name="physical_notes" placeholder="Optional notes..."></textarea></label>
@@ -1111,6 +1153,7 @@
 
   let movementEls = {};
   let tempEls = {};
+  let medEls = {};
   const getMovementCheckboxValues = (selector) =>
     Array.from(document.querySelectorAll(selector))
       .filter((el) => el.checked)
@@ -1200,6 +1243,14 @@
     }
   };
 
+  const setMedPresent = (present) => {
+    if (!medEls.bodyWrap) return;
+    medEls.bodyWrap.classList.toggle('is-collapsed', !present);
+    if (!present) {
+      clearMedFields({ keepPresent: true });
+    }
+  };
+
   const clearMovementFields = ({ keepPresent = false } = {}) => {
     if (!keepPresent) {
       document.querySelectorAll('input[name="movement_present"]').forEach((el) => {
@@ -1236,6 +1287,24 @@
       });
     setTempCheckboxValues('[data-temp-symptom]', []);
     syncTempArrays();
+  };
+
+  const clearMedFields = ({ keepPresent = false } = {}) => {
+    if (!keepPresent) {
+      document.querySelectorAll('input[name="med_change_present"]').forEach((el) => {
+        el.checked = el.value === 'no';
+      });
+    }
+    ['med_change_time','med_change_name','med_change_details','med_change_notes']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    ['med_change_new','med_change_dose','med_change_stopped','med_change_prn','med_change_other']
+      .forEach((name) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        if (el) el.checked = false;
+      });
   };
 
   const hydrateMovementFromData = (data = {}) => {
@@ -1309,6 +1378,32 @@
     syncTempArrays();
   };
 
+  const hydrateMedFromData = (data = {}) => {
+    const present = String(data.med_change_present || '').toLowerCase() === 'yes'
+      || data.med_change_present === true;
+    document.querySelectorAll('input[name="med_change_present"]').forEach((el) => {
+      el.checked = present ? el.value === 'yes' : el.value === 'no';
+    });
+    setMedPresent(present);
+    if (!present) return;
+
+    const fields = [
+      ['med_change_time', data.med_change_time],
+      ['med_change_name', data.med_change_name],
+      ['med_change_details', data.med_change_details],
+      ['med_change_notes', data.med_change_notes],
+    ];
+    fields.forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el && value != null) el.value = value;
+    });
+    ['med_change_new','med_change_dose','med_change_stopped','med_change_prn','med_change_other']
+      .forEach((name) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        if (el) el.checked = !!data[name];
+      });
+  };
+
   // 4) Start logic once DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
     formEl        = document.getElementById('cg-form');
@@ -1345,6 +1440,9 @@
     tempEls = {
       bodyWrap: document.querySelector('[data-temp-body-wrap]'),
       symptomsInput: document.getElementById('temp_symptoms')
+    };
+    medEls = {
+      bodyWrap: document.querySelector('[data-med-body-wrap]')
     };
     if (entryDateInput && !entryDateInput.value) {
       entryDateInput.value = todayISO();
@@ -1400,6 +1498,13 @@
       el.addEventListener('change', () => {
         const present = el.value === 'yes';
         setTempPresent(present);
+        save(steps[movementStepIndex], movementStepIndex, true);
+      });
+    });
+    document.querySelectorAll('input[name="med_change_present"]').forEach((el) => {
+      el.addEventListener('change', () => {
+        const present = el.value === 'yes';
+        setMedPresent(present);
         save(steps[movementStepIndex], movementStepIndex, true);
       });
     });
@@ -1459,6 +1564,7 @@
       syncAggressionControls();
       hydrateMovementFromData(draft.data[movementStepIndex] || {});
       hydrateTempFromData(draft.data[movementStepIndex] || {});
+      hydrateMedFromData(draft.data[movementStepIndex] || {});
       applyConditionalSections();
       toast('Draft restored');
     });
@@ -1819,6 +1925,7 @@
       if (idx === movementStepIndex) {
         hydrateMovementFromData(draft.data[idx] || {});
         hydrateTempFromData(draft.data[idx] || {});
+        hydrateMedFromData(draft.data[idx] || {});
       }
     }
     function loadDraft(){ try{ const raw=localStorage.getItem(DRAFT_KEY); return raw?JSON.parse(raw):null; }catch{ return null; } }
@@ -1863,6 +1970,8 @@
       movementEls.detailsToggle?.setAttribute('aria-expanded', 'false');
       clearTempFields();
       tempEls.bodyWrap?.classList.add('is-collapsed');
+      clearMedFields();
+      medEls.bodyWrap?.classList.add('is-collapsed');
     }
     function clearDraftUI(){
       draft={ data:{}, savedAt:{} };
@@ -1872,6 +1981,7 @@
       resetAdlEntries();
       clearMovementFields();
       clearTempFields();
+      clearMedFields();
     }
     function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.style.opacity='1'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.opacity='0',1400); }
 
